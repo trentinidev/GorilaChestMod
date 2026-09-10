@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.1
+
+- The hotkey defaults to **J**. G turned out to open the hotbar radial, which the
+  key binding screen does not list.
+- The button is back under the weight readout where it belongs. Positioning it
+  by world coordinates put it in the top corner instead.
+- It carries its own canvas at a higher sorting order now, which is what keeps
+  an open chest from drawing over it, rather than relying on hierarchy order.
+
 ## 2.2.0
 
 - The quick stack hotkey defaults to **G**. V, the old suggestion, is taken by

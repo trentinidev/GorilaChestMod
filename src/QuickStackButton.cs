@@ -18,7 +18,7 @@ namespace GorilaChestMod
         private static readonly Vector2 Size = new Vector2(118f, 118f);
 
         /// <summary>Offset from the weight readout, in canvas units, before the configured nudge.</summary>
-        private static readonly Vector2 FromWeight = new Vector2(78f, -96f);
+        private static readonly Vector2 FromWeight = new Vector2(0f, -140f);
 
         private static Button _button;
         private static RectTransform _rect;
@@ -34,22 +34,31 @@ namespace GorilaChestMod
 
             Destroy();
 
+            // Parented next to the weight readout, which already sits outside the
+            // item grid and moves with the panel, so the anchoring is inherited.
             _anchor = gui.m_weight.rectTransform;
 
-            // The root holds the player panel and the container panel as siblings,
-            // so a child of it that comes last always draws above both.
-            Transform root = gui.m_player.parent != null ? gui.m_player.parent : gui.m_player.transform;
-
-            _button = Object.Instantiate(gui.m_takeAllButton, root);
+            _button = Object.Instantiate(gui.m_takeAllButton, _anchor.parent);
             _button.name = "GorilaChestMod_QuickStack";
             _rect = _button.GetComponent<RectTransform>();
 
             RectTransform source = gui.m_takeAllButton.GetComponent<RectTransform>();
             if (_rect != null && source != null)
             {
+                _rect.anchorMin = _anchor.anchorMin;
+                _rect.anchorMax = _anchor.anchorMax;
+                _rect.pivot = _anchor.pivot;
                 _rect.localScale = source.localScale;
                 _rect.sizeDelta = Size;
             }
+
+            // An open chest panel is drawn after the player panel, so hierarchy order
+            // alone cannot keep the button visible. Its own canvas with a higher
+            // sorting order can, and the raycaster keeps it clickable.
+            Canvas canvas = _button.gameObject.AddComponent<Canvas>();
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = 100;
+            _button.gameObject.AddComponent<GraphicRaycaster>();
 
             SetLabel(_button, ModConfig.QuickStackButtonLabel.Value);
 
@@ -92,8 +101,7 @@ namespace GorilaChestMod
 
             if (show)
             {
-                // Done on the way in rather than every frame, both of these dirty the canvas.
-                _button.transform.SetAsLastSibling();
+                // On the way in rather than every frame, this dirties the canvas.
                 Reposition();
             }
         }
@@ -106,11 +114,12 @@ namespace GorilaChestMod
             }
 
             Vector2 offset = FromWeight + ModConfig.QuickStackButtonOffset.Value;
-            _rect.position = _anchor.TransformPoint(new Vector3(offset.x, offset.y, 0f));
+            _rect.anchoredPosition = _anchor.anchoredPosition + offset;
 
             if (ModConfig.Verbose.Value)
             {
-                GorilaChestModPlugin.Log.LogInfo($"Quick stack button placed at {_rect.position}, offset {offset}.");
+                GorilaChestModPlugin.Log.LogInfo(
+                    $"Quick stack button at {_rect.anchoredPosition}, weight readout at {_anchor.anchoredPosition}, offset {offset}.");
             }
         }
 

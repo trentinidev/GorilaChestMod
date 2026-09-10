@@ -81,9 +81,9 @@ namespace GorilaChestMod
                 "outside the inventory grid. Use this if it lands on top of something else in your resolution.");
 
             QuickStackHotkey = config.Bind(
-                "3 - Quick stack", "Hotkey", new KeyboardShortcut(KeyCode.G),
-                "Hotkey for quick stacking. Works with the inventory closed as well. G is free in the vanilla key list, " +
-                "unlike V which the game uses for auto pickup. Set to None to use only the button.");
+                "3 - Quick stack", "Hotkey", new KeyboardShortcut(KeyCode.J),
+                "Hotkey for quick stacking. Works with the inventory closed as well. J is free in Valheim: V is auto pickup " +
+                "and G opens the hotbar radial. Set to None to use only the button.");
 
             QuickStackHotkeyNeedsInventory = config.Bind(
                 "3 - Quick stack", "HotkeyNeedsInventory", false,

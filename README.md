@@ -7,9 +7,9 @@ Chest quality of life for **Valheim**, in three parts:
 2. **Oversized chest stacks.** A chest slot holds far more than the vanilla
    limit, 100000 by default, so a chest full of wood is one slot instead of
    twenty. Your own inventory keeps the vanilla limits.
-3. **Quick stack.** One button, or the **G** key, that pushes matching items from
-   your inventory into the chests in range. G is free in the vanilla key list,
-   unlike V, which the game already uses for auto pickup.
+3. **Quick stack.** One button, or the **J** key, that pushes matching items from
+   your inventory into the chests in range. J is free in Valheim: V is auto
+   pickup and G opens the hotbar radial.
 
 Runs on the client and on a dedicated server.
 
@@ -32,7 +32,7 @@ BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
 3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
-   `GorilaChestMod 2.2.0 loaded`.
+   `GorilaChestMod 2.2.1 loaded`.
 
 With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
 `-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
@@ -75,7 +75,7 @@ can be edited with the game closed.
 | Quick stack | `ShowButton` | `true` | Show the button in the inventory screen. |
 | Quick stack | `ButtonOffset` | `0, 0` | Nudge the button in canvas units from its spot beside the weight readout. |
 | Quick stack | `ButtonLabel` | `Stack to nearby chests` | Caption on the button. |
-| Quick stack | `Hotkey` | `G` | Hotkey for quick stacking, inventory open or closed. |
+| Quick stack | `Hotkey` | `J` | Hotkey for quick stacking, inventory open or closed. |
 | Quick stack | `HotkeyNeedsInventory` | `false` | Require the inventory to be open for the hotkey. |
 | Debug | `Verbose` | `false` | Log every withdrawal, move and patched call. |
 

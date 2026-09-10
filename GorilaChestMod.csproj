@@ -4,7 +4,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>GorilaChestMod</AssemblyName>
     <RootNamespace>GorilaChestMod</RootNamespace>
-    <Version>2.2.0</Version>
+    <Version>2.2.1</Version>
     <LangVersion>latest</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -77,6 +77,11 @@
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(ValheimManaged)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- Canvas and CanvasGroup live here. -->
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ValheimManaged)\UnityEngine.UIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
