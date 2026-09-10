@@ -210,6 +210,8 @@ author over `packaging/icon-source.png`. Replace the source art or edit the
 bands and re-run it. `packaging/make-icon-badge.ps1` draws the older gorilla
 roundel entirely in code, if you want a mark rather than a scene.
 `docs/nexus-description.bbcode` holds the Nexus page description, ready to paste.
+`docs/thunderstore-publish.md` covers the Thunderstore upload: which file, which
+team, which categories, and the checks the site runs.
 
 ## Compatibility check after a game update
 
