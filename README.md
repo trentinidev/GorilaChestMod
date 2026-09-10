@@ -32,7 +32,7 @@ BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
 3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
-   `GorilaChestMod 2.2.1 loaded`.
+   `GorilaChestMod 2.2.2 loaded`.
 
 With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
 `-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
@@ -74,7 +74,7 @@ can be edited with the game closed.
 | Quick stack | `SkipHotbar` | `true` | Leave the hotbar row alone. |
 | Quick stack | `ShowButton` | `true` | Show the button in the inventory screen. |
 | Quick stack | `ButtonOffset` | `0, 0` | Nudge the button in canvas units from its spot beside the weight readout. |
-| Quick stack | `ButtonLabel` | `Stack to nearby chests` | Caption on the button. |
+| Quick stack | `ButtonLabel` | `Stack to nearby chests` | Caption on the button, one word per line. |
 | Quick stack | `Hotkey` | `J` | Hotkey for quick stacking, inventory open or closed. |
 | Quick stack | `HotkeyNeedsInventory` | `false` | Require the inventory to be open for the hotkey. |
 | Debug | `Verbose` | `false` | Log every withdrawal, move and patched call. |

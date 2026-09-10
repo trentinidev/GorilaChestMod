@@ -6,10 +6,11 @@ namespace GorilaChestMod
 {
     /// <summary>
     /// Builds the quick stack button by cloning the game's own "take all" button,
-    /// so it inherits the vanilla look, font and sounds. It lives beside the
-    /// inventory rather than inside it: parented to the root that holds both the
-    /// player and the container panels, drawn last so an open chest cannot cover
-    /// it, and glued to the weight readout so it follows the layout.
+    /// so it inherits the vanilla look, font and sounds. It sits beside the
+    /// inventory rather than inside it: anchored to the weight readout so it
+    /// follows the panel, pushed far enough right to clear an open chest panel,
+    /// and carrying its own canvas at a high sorting order so nothing draws over
+    /// it. The caption is broken one word per line to fit the square.
     /// Nothing here runs on a dedicated server, where there is no InventoryGui.
     /// </summary>
     internal static class QuickStackButton
@@ -18,7 +19,7 @@ namespace GorilaChestMod
         private static readonly Vector2 Size = new Vector2(118f, 118f);
 
         /// <summary>Offset from the weight readout, in canvas units, before the configured nudge.</summary>
-        private static readonly Vector2 FromWeight = new Vector2(0f, -140f);
+        private static readonly Vector2 FromWeight = new Vector2(46f, -140f);
 
         private static Button _button;
         private static RectTransform _rect;
@@ -57,7 +58,7 @@ namespace GorilaChestMod
             // sorting order can, and the raycaster keeps it clickable.
             Canvas canvas = _button.gameObject.AddComponent<Canvas>();
             canvas.overrideSorting = true;
-            canvas.sortingOrder = 100;
+            canvas.sortingOrder = 5000;
             _button.gameObject.AddComponent<GraphicRaycaster>();
 
             SetLabel(_button, ModConfig.QuickStackButtonLabel.Value);
@@ -142,11 +143,11 @@ namespace GorilaChestMod
 
             foreach (TMP_Text text in button.GetComponentsInChildren<TMP_Text>(true))
             {
-                text.text = label;
-
-                // A square button, so the caption wraps over two or three lines.
-                text.textWrappingMode = TextWrappingModes.Normal;
+                // One word per line, centred in the square, the way a stacked caption reads.
+                text.text = label.Replace(" ", "\n");
+                text.textWrappingMode = TextWrappingModes.NoWrap;
                 text.alignment = TextAlignmentOptions.Center;
+                text.lineSpacing = -8f;
                 text.enableAutoSizing = true;
                 text.fontSizeMin = 9f;
                 text.fontSizeMax = text.fontSize;

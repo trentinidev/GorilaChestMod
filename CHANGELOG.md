@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.2
+
+- The button clears the open chest panel: it sits further right, and its own
+  canvas now sorts high enough that nothing draws over it.
+- The caption is broken one word per line and centred, so "Stack to Chests"
+  reads as three stacked lines inside the square.
+
 ## 2.2.1
 
 - New icon: the chest artwork, with the mod name across the top band and the
