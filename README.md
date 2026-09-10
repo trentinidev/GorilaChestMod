@@ -205,7 +205,10 @@ The version lives **only** in `<Version>` in `GorilaChestMod.csproj`. The
 `GenerateBuildInfo` target turns it into the constant the `BepInPlugin` attribute
 uses, and the packaging script reads the same property for `manifest.json`.
 
-The icon comes from `packaging/make-icon.ps1`, which draws the PNG in code.
+The icon comes from `packaging/make-icon.ps1`, which lays the mod name and the
+author over `packaging/icon-source.png`. Replace the source art or edit the
+bands and re-run it. `packaging/make-icon-badge.ps1` draws the older gorilla
+roundel entirely in code, if you want a mark rather than a scene.
 `docs/nexus-description.bbcode` holds the Nexus page description, ready to paste.
 
 ## Compatibility check after a game update

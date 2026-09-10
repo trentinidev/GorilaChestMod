@@ -1,83 +1,90 @@
-# Draws packaging/icon.png, the 256x256 icon Thunderstore and r2modman require.
-# The badge is derived from the Gorila Holdings mark: black roundel, gorilla bust
-# with a light face mask, and the brand orange carried by the chest.
-# Tweak and re-run:  powershell -ExecutionPolicy Bypass -File packaging\make-icon.ps1
+# Composes packaging/icon.png, the 256x256 icon Thunderstore and r2modman require:
+# the artwork in packaging/icon-source.png with the mod name across the top band
+# and the author across the bottom one.
+# Re-run after changing either:  powershell -ExecutionPolicy Bypass -File packaging\make-icon.ps1
 Add-Type -AssemblyName System.Drawing
 
-$out = Join-Path $PSScriptRoot 'icon.png'
-$size = 256
+$source = Join-Path $PSScriptRoot 'icon-source.png'
+$out    = Join-Path $PSScriptRoot 'icon.png'
+$size   = 256
 
-$paper  = [System.Drawing.Color]::FromArgb(255, 246, 246, 244)
-$ink    = [System.Drawing.Color]::FromArgb(255, 24, 24, 24)
-$face   = [System.Drawing.Color]::FromArgb(255, 246, 246, 244)
-$orange = [System.Drawing.Color]::FromArgb(255, 247, 124, 20)
-$orangeDark = [System.Drawing.Color]::FromArgb(255, 198, 92, 8)
+$title  = 'GorilaChestMod'
+$author = 'by trentinidev'
+
+# The two bands the text sits in, as top and height in pixels.
+$topBand    = @{ Y = 0;   H = 36 }
+$bottomBand = @{ Y = 214; H = 42 }
+
+$ink   = [System.Drawing.Color]::FromArgb(255, 20, 20, 20)
+$halo  = [System.Drawing.Color]::FromArgb(210, 255, 255, 255)
+$band  = [System.Drawing.Color]::FromArgb(165, 255, 255, 255)
 
 $bmp = New-Object System.Drawing.Bitmap($size, $size)
 $g = [System.Drawing.Graphics]::FromImage($bmp)
-$g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
-$g.Clear($paper)
+$g.SmoothingMode     = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+$g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+$g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
 
-function New-Brush($c) { New-Object System.Drawing.SolidBrush($c) }
-function New-Pen($c, $w) { New-Object System.Drawing.Pen($c, $w) }
+$art = [System.Drawing.Image]::FromFile($source)
+$g.DrawImage($art, 0, 0, $size, $size)
+$art.Dispose()
 
-# ---- roundel
-$ringBox = New-Object System.Drawing.Rectangle(34, 8, 188, 188)
-$ringWidth = 14
-$g.DrawEllipse((New-Pen $ink $ringWidth), $ringBox)
+# Lighten the bands so the lettering reads at gallery size.
+$brushBand = New-Object System.Drawing.SolidBrush($band)
+$g.FillRectangle($brushBand, 0, $topBand.Y, $size, $topBand.H)
+$g.FillRectangle($brushBand, 0, $bottomBand.Y, $size, $bottomBand.H)
 
-# everything inside the roundel is clipped to it, like the source mark
-$inner = New-Object System.Drawing.Drawing2D.GraphicsPath
-$inner.AddEllipse($ringBox.X + $ringWidth, $ringBox.Y + $ringWidth, $ringBox.Width - 2 * $ringWidth, $ringBox.Height - 2 * $ringWidth)
-$state = $g.Save()
-$g.SetClip($inner)
+function Get-Family {
+    foreach ($name in @('Arial Black', 'Segoe UI Black', 'Segoe UI', 'Tahoma', 'Arial')) {
+        try { return New-Object System.Drawing.FontFamily($name) } catch { }
+    }
+    return [System.Drawing.FontFamily]::GenericSansSerif
+}
 
-# ---- gorilla bust, built from overlapping shapes filled in one colour
-$brushInk = New-Brush $ink
-$g.FillEllipse($brushInk, 68, 28, 120, 118)     # skull
-$g.FillEllipse($brushInk, 38, 62, 68, 116)       # left mane
-$g.FillEllipse($brushInk, 150, 62, 68, 116)      # right mane
-$g.FillEllipse($brushInk, 26, 110, 204, 150)    # shoulders
+$family = Get-Family
 
-# ---- face mask
-$brushFace = New-Brush $face
-$g.FillEllipse($brushFace, 96, 68, 64, 56)       # brow and eye area
-$g.FillEllipse($brushFace, 100, 96, 56, 62)      # muzzle
+# Largest size that still fits the band with a margin on each side.
+function New-FittedFont($text, $startSize, $maxWidth, $maxHeight) {
+    for ($s = $startSize; $s -ge 6; $s--) {
+        $font = New-Object System.Drawing.Font($family, $s, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+        $m = $g.MeasureString($text, $font)
+        if ($m.Width -le $maxWidth -and $m.Height -le $maxHeight) { return $font }
+        $font.Dispose()
+    }
+    return New-Object System.Drawing.Font($family, 6, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+}
 
-# ---- brow ridge
-$g.FillEllipse($brushInk, 100, 82, 26, 13)
-$g.FillEllipse($brushInk, 130, 82, 26, 13)
-$g.FillRectangle($brushInk, 106, 82, 44, 13)
+# Drawn a few times in white underneath, so the letters hold up over busy art.
+function Write-Centered($text, $font, $bandY, $bandH) {
+    $m = $g.MeasureString($text, $font)
+    $x = ($size - $m.Width) / 2
+    $y = $bandY + ($bandH - $m.Height) / 2
 
-# ---- eyes
-$g.FillEllipse($brushInk, 106, 97, 17, 12)
-$g.FillEllipse($brushInk, 133, 97, 17, 12)
+    $brushHalo = New-Object System.Drawing.SolidBrush($halo)
+    foreach ($dx in -1, 0, 1) {
+        foreach ($dy in -1, 0, 1) {
+            if ($dx -ne 0 -or $dy -ne 0) { $g.DrawString($text, $font, $brushHalo, ($x + $dx), ($y + $dy)) }
+        }
+    }
+    $brushHalo.Dispose()
 
-# ---- nose
-$g.FillEllipse($brushInk, 114, 118, 11, 9)
-$g.FillEllipse($brushInk, 131, 118, 11, 9)
-$g.FillRectangle($brushInk, 120, 121, 16, 5)
+    $brushInk = New-Object System.Drawing.SolidBrush($ink)
+    $g.DrawString($text, $font, $brushInk, $x, $y)
+    $brushInk.Dispose()
+}
 
-# ---- downturned mouth
-$penMouth = New-Pen $ink 6
-$penMouth.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
-$penMouth.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
-$g.DrawArc($penMouth, 112, 132, 32, 22, 200, 140)
+$titleFont = New-FittedFont $title 26 ($size - 16) ($topBand.H - 4)
+Write-Centered $title $titleFont $topBand.Y $topBand.H
 
-$g.Restore($state)
+$authorFont = New-FittedFont $author 20 ($size - 40) ($bottomBand.H - 6)
+Write-Centered $author $authorFont $bottomBand.Y $bottomBand.H
 
-# ---- chest across the bottom, carrying the brand orange
-$bodyX = 58; $bodyY = 212; $bodyW = 140; $bodyH = 34
-$g.FillPie((New-Brush $orange), $bodyX, 192, $bodyW, 42, 180, 180)
-$g.FillRectangle((New-Brush $orange), $bodyX, $bodyY, $bodyW, $bodyH)
+"title font: $($titleFont.Size)px, author font: $($authorFont.Size)px"
 
-$g.FillRectangle((New-Brush $orangeDark), $bodyX, ($bodyY - 6), $bodyW, 12)
-$g.FillRectangle((New-Brush $ink), 74, $bodyY, 9, $bodyH)
-$g.FillRectangle((New-Brush $ink), 173, $bodyY, 9, $bodyH)
-$g.FillRectangle((New-Brush $ink), 120, ($bodyY - 9), 16, 20)
-$g.FillEllipse((New-Brush $orange), 124, ($bodyY - 1), 8, 8)
-
+$titleFont.Dispose()
+$authorFont.Dispose()
 $g.Dispose()
+
 $bmp.Save($out, [System.Drawing.Imaging.ImageFormat]::Png)
 $bmp.Dispose()
 

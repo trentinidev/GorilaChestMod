@@ -2,6 +2,10 @@
 
 ## 2.2.1
 
+- New icon: the chest artwork, with the mod name across the top band and the
+  author across the bottom one. Composed by packaging/make-icon.ps1 from
+  packaging/icon-source.png, so re-running it picks up either change. The old
+  drawn badge is still there as make-icon-badge.ps1.
 - The hotkey defaults to **J**. G turned out to open the hotbar radial, which the
   key binding screen does not list.
 - The button is back under the weight readout where it belongs. Positioning it
