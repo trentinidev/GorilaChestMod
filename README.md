@@ -1,117 +1,119 @@
 # CraftFromChests
 
-Mod de cliente para **Valheim** que deixa você craftar, melhorar e construir usando
-os itens dos baús que estão por perto, sem precisar tirar nada deles antes.
+A client side **Valheim** mod that lets you craft, upgrade and build using the
+items inside nearby chests, without hauling anything into your inventory first.
 
-A lista de receitas, os números de "tenho / preciso" e o botão de craft passam a
-contar o conteúdo dos baús próximos. Ao craftar, os itens saem primeiro da sua
-mochila e só depois dos baús, do mais perto para o mais longe.
+The recipe list, the have/need numbers and the craft button all count the
+contents of the chests around you. When you craft, the items in your own
+inventory are spent first, then the chests, closest one first.
 
-## Versão do jogo analisada
+## Game version this was built against
 
-| Item | Valor |
+| Item | Value |
 | --- | --- |
-| Versão do jogo | 1.0.7 |
-| Build Steam | 25185596 |
-| Motor | Unity 6000.0.75f1, backend Mono |
-| Código do jogo | `valheim_Data/Managed/assembly_valheim.dll` |
+| Game version | 1.0.7 |
+| Steam build | 25185596 |
+| Engine | Unity 6000.0.75f1, Mono backend |
+| Game code | `valheim_Data/Managed/assembly_valheim.dll` |
 
-Como o backend é Mono (e não IL2CPP), o caminho normal de modding continua valendo:
-BepInEx 5 + Harmony, com patches em memória. Nenhum arquivo do jogo é alterado.
+Because the backend is Mono and not IL2CPP, the usual modding path still applies:
+BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 
-## Instalação manual
+## Manual install
 
-1. Instale o **BepInEx 5** para Valheim na pasta do jogo, o pacote
-   `denikson-BepInExPack_Valheim`. Rode o jogo uma vez para ele gerar as pastas.
-2. Copie `CraftFromChests.dll` para `Valheim/BepInEx/plugins/CraftFromChests/`,
-   ou extraia o zip `-nexus.zip` por cima da pasta do jogo.
-3. Suba o jogo. O log em `Valheim/BepInEx/LogOutput.log` deve trazer uma linha
+1. Install **BepInEx 5** for Valheim in the game folder, the
+   `denikson-BepInExPack_Valheim` package. Launch the game once so it creates its
+   folders.
+2. Copy `CraftFromChests.dll` into `Valheim/BepInEx/plugins/CraftFromChests/`, or
+   extract the `-nexus.zip` release over the game folder.
+3. Start the game. `Valheim/BepInEx/LogOutput.log` should contain a line reading
    `CraftFromChests 1.0.0 loaded`.
 
-O `dotnet build` já copia a DLL para `BepInEx/plugins/CraftFromChests/`
-automaticamente, se essa pasta existir.
+`dotnet build` already copies the dll into `BepInEx/plugins/CraftFromChests/`
+when that folder exists.
 
-## Instalação pelo r2modman
+## Installing through r2modman
 
-O r2modman e o Thunderstore Mod Manager mantêm o BepInEx dentro do perfil deles,
-então **não misture com uma instalação manual na raiz do jogo**. Se você já tem
-uma, apague de `Valheim/` o `winhttp.dll`, o `doorstop_config.ini`, o
-`.doorstop_version`, a pasta `doorstop_libs` e a pasta `BepInEx` antes de migrar.
-Dois BepInEx no mesmo jogo é a causa clássica de mod carregando duas vezes ou
-não carregando.
+r2modman and Thunderstore Mod Manager keep BepInEx inside their own profile, so
+**do not mix them with a manual install in the game root**. If you have one,
+delete `winhttp.dll`, `doorstop_config.ini`, `.doorstop_version`, the
+`doorstop_libs` folder and the `BepInEx` folder from `Valheim/` before you
+migrate. Two BepInEx installs in one game is the classic cause of a mod loading
+twice or not loading at all.
 
-Três formas de gerenciar este mod por lá, da mais rápida para a mais completa:
+Three ways to manage this mod there, quickest first:
 
-| Forma | Como | O que você ganha e o que perde |
+| Way | How | What you get, what you give up |
 | --- | --- | --- |
-| DLL solta | `Import local mod` apontando para `CraftFromChests.dll` | Funciona na hora. Você digita nome e versão na mão, sem ícone e sem dependência automática do BepInEx. |
-| Zip local | `Import local mod` apontando para `dist/CraftFromChests-<versão>-thunderstore.zip` | Ícone, versão, descrição e o BepInEx instalado como dependência. Continua privado, nada é publicado. |
-| Thunderstore | Publicar o mesmo zip em thunderstore.io | Instalação e atualização pela busca do próprio r2modman, para você e para qualquer outra pessoa. |
+| Loose dll | `Import local mod`, pick `CraftFromChests.dll` | Works right away. You type the name and version by hand, no icon and no automatic BepInEx dependency. |
+| Local zip | `Import local mod`, pick `dist/CraftFromChests-<version>-thunderstore.zip` | Icon, version, description and BepInEx pulled in as a dependency. Stays private, nothing is published. |
+| Thunderstore | Publish that same zip on thunderstore.io | Install and update straight from the r2modman browser, for you and for anyone else. |
 
-A Nexus não entra nessa lista. O r2modman não instala mod da Nexus, e o
-gerenciador da Nexus é o Vortex. Publicar nos dois é comum, mas quem baixa da
-Nexus instala manualmente ou pelo Vortex.
+Nexus Mods is not part of that list. r2modman does not install mods from Nexus,
+and the Nexus manager is Vortex. Publishing on both is common, but a Nexus
+download is installed manually or through Vortex.
 
-No r2modman o arquivo de configuração fica dentro do perfil, e não em
-`Valheim/BepInEx/config`. O próprio gerenciador tem editor de config.
+Under r2modman the config file lives inside the profile, not in
+`Valheim/BepInEx/config`. The manager has its own config editor.
 
-## Configuração
+## Configuration
 
-O arquivo `BepInEx/config/dev.trentini.craftfromchests.cfg` é criado no primeiro
-boot e pode ser editado com o jogo fechado.
+`BepInEx/config/dev.trentini.craftfromchests.cfg` is written on first launch and
+can be edited with the game closed.
 
-| Opção | Padrão | O que faz |
+| Option | Default | What it does |
 | --- | --- | --- |
-| `Enabled` | `true` | Desliga o mod inteiro sem removê-lo. |
-| `Range` | `20` | Raio em metros de onde os baús são lidos. |
-| `UseForBuilding` | `true` | Também paga construções (martelo, enxada) com os baús. |
-| `IncludeVehicleContainers` | `true` | Inclui baús de carroças e barcos. |
-| `Verbose` | `false` | Loga cada retirada de baú e cada redirecionamento de chamada. |
+| `Enabled` | `true` | Master switch, turns the mod off without removing it. |
+| `Range` | `20` | Radius in meters that chests are pulled from. |
+| `UseForBuilding` | `true` | Also pay hammer, hoe and cultivator costs from chests. |
+| `IncludeVehicleContainers` | `true` | Include containers on carts and ships. |
+| `Verbose` | `false` | Log every chest withdrawal and every redirected call. |
 
-## Quais baús entram na conta
+## Which chests count
 
-Um baú só é usado se passar pelas mesmas regras que o jogo aplica quando você
-tenta abri-lo:
+A chest is only used if it passes the same rules the game applies when you try
+to open it:
 
-- está dentro do raio configurado;
-- privacidade `Public`, ou `Private` com você como criador da peça (baú de grupo
-  fica fora, igual ao vanilla);
-- se o baú checa guard stone, você precisa ter acesso ao ward;
-- ninguém mais está com ele aberto (baú em uso por outro jogador é ignorado).
+- it is inside the configured radius;
+- privacy is `Public`, or `Private` with you as the creator of the piece, so
+  group chests stay out exactly like in vanilla;
+- if the chest checks for a guard stone, you need access to that ward;
+- nobody else has it open, a chest in use by another player is skipped.
 
-Antes de tirar qualquer item o mod reivindica a posse de rede do baú
-(`ZNetView.ClaimOwnership`), que é o que autoriza a gravar o inventário de volta
-no ZDO. É o mesmo mecanismo que o jogo usa em "pegar tudo", então funciona em
-servidor dedicado sem mod do lado do servidor. É um mod **só de cliente**.
+Before taking anything the mod claims network ownership of the chest through
+`ZNetView.ClaimOwnership`, which is what authorises writing the inventory back
+into the ZDO. That is the same mechanism the game uses for "take all", so this
+works on a dedicated server with no server side mod. It is a **client side only**
+mod: players without it are unaffected.
 
-## Como funciona por dentro
+## How it works
 
-Os métodos do jogo leem o inventário do jogador por campo (`m_inventory`), sem
-nenhum ponto de extensão. Em vez de injetar itens falsos na mochila, o mod
-reescreve, por transpiler, apenas as chamadas de inventário dentro de sete
-métodos. Uma chamada de instância já tem o `this` como primeiro argumento na
-pilha, então um método estático cujo primeiro parâmetro é o `Inventory` é
-substituição direta e o resto do corpo do método fica intacto.
+The game methods read the player inventory straight from the `m_inventory`
+field, with no extension point anywhere. Rather than injecting fake items into
+your backpack, the mod uses transpilers to rewrite only the inventory calls
+inside seven game methods. An instance call already carries `this` as its first
+stack argument, so a static method whose first parameter is the `Inventory` is a
+drop-in replacement and the rest of the method body is left untouched.
 
-Chamadas redirecionadas para `InventoryBridge`:
+Calls redirected into `InventoryBridge`:
 
-| Método do jogo | Chamada trocada | Para quê |
+| Game method | Call swapped | Why |
 | --- | --- | --- |
-| `Player.HaveRequirementItems` | `CountItems` | libera a receita e o botão de craft |
-| `Player.GetFirstRequiredItem` | `CountItems`, `GetItem` | receitas de ingrediente único (hidromel, banquetes) |
-| `Player.ConsumeResources` | `RemoveItem` | cobra o craft e a construção |
-| `Player.HaveRequirements(Piece)` | `HaveItem`, `CountItems` | libera a peça de construção |
-| `InventoryGui.DoCrafting` | `RemoveItem` | cobra o ingrediente único |
-| `InventoryGui.SetupRequirement` | `CountItems` | números de "tenho / preciso" na UI |
+| `Player.HaveRequirementItems` | `CountItems` | unlocks the recipe and the craft button |
+| `Player.GetFirstRequiredItem` | `CountItems`, `GetItem` | single ingredient recipes such as meads and feasts |
+| `Player.ConsumeResources` | `RemoveItem` | pays for a craft and for a placed piece |
+| `Player.HaveRequirements(Piece)` | `HaveItem`, `CountItems` | unlocks the building piece |
+| `InventoryGui.DoCrafting` | `RemoveItem` | pays the single ingredient |
+| `InventoryGui.SetupRequirement` | `CountItems` | the have/need numbers in the UI |
 
-Mais três patches de apoio: `Container.Awake` registra os baús que aparecem no
-mundo (nada de `FindObjectsOfType`), e `Player.UpdatePlacement` e
-`Hud.SetupPieceInfo` marcam o contexto de construção para a opção
-`UseForBuilding` poder valer.
+Three support patches on top of that: `Container.Awake` registers every chest
+that spawns, so no `FindObjectsOfType` sweep is ever needed, while
+`Player.UpdatePlacement` and `Hud.SetupPieceInfo` mark the building context so
+the `UseForBuilding` option can be honoured.
 
-Se um dia o jogo mudar e um desses pontos deixar de existir, o transpiler grava
-um `LogError` no log do BepInEx dizendo qual chamada não foi encontrada, em vez
-de falhar em silêncio.
+If a future game update removes one of those call sites, the transpiler writes a
+`LogError` into the BepInEx log naming the call it could not find, instead of
+failing silently.
 
 ## Build
 
@@ -119,62 +121,70 @@ de falhar em silêncio.
 dotnet build -c Release
 ```
 
-Se o Valheim estiver em outro caminho:
+If Valheim lives somewhere else:
 
 ```
 dotnet build -c Release -p:ValheimDir="D:\Steam\steamapps\common\Valheim"
 ```
 
-As referências do jogo vêm direto de `valheim_Data/Managed`, e o BepInEx/Harmony
-vêm do feed NuGet do próprio BepInEx, já configurado em `nuget.config`.
+Game references come straight from `valheim_Data/Managed`, and BepInEx plus
+Harmony come from the BepInEx NuGet feed, already configured in `nuget.config`.
 
-## Empacotar e publicar
+## Packaging and publishing
 
 ```
 powershell -ExecutionPolicy Bypass -File packaging\build-package.ps1
 ```
 
-Gera em `dist/` os dois zips de release:
+Writes both release zips into `dist/`:
 
-| Zip | Conteúdo | Para onde vai |
+| Zip | Contents | Where it goes |
 | --- | --- | --- |
-| `-thunderstore.zip` | `manifest.json`, `icon.png`, README, changelog e a DLL na raiz | Thunderstore, ou `Import local mod` do r2modman |
-| `-nexus.zip` | `BepInEx/plugins/CraftFromChests/CraftFromChests.dll` mais README e changelog | Nexus Mods, o jogador extrai por cima da pasta do jogo |
+| `-thunderstore.zip` | `manifest.json`, `icon.png`, readme, changelog and the dll at the root | Thunderstore, or `Import local mod` in r2modman |
+| `-nexus.zip` | `BepInEx/plugins/CraftFromChests/CraftFromChests.dll` plus readme and changelog | Nexus Mods, the player extracts it over the game folder |
 
-O script valida o que costuma reprovar upload antes de gerar o zip: versão em
-`x.y.z`, ícone exatamente 256 por 256, nome do manifest só com letras, dígitos e
-sublinhado, e descrição dentro do limite de 250 caracteres. Ele também confere
-que a versão da DLL compilada bate com a do csproj.
+The script validates what usually gets an upload rejected before it builds the
+zip: an `x.y.z` version, an icon that is exactly 256 by 256, a manifest name made
+only of letters, digits and underscores, and a description within the 250
+character limit. It also checks that the compiled dll carries the same version as
+the csproj.
 
-A versão vive **só** em `<Version>` no `CraftFromChests.csproj`. O alvo
-`GenerateBuildInfo` gera de lá a constante que o atributo `BepInPlugin` usa, e o
-script de pacote lê a mesma propriedade para preencher o `manifest.json`. Para
-lançar uma versão nova: mexa no csproj, escreva o changelog, rode o script.
+The version lives **only** in `<Version>` in `CraftFromChests.csproj`. The
+`GenerateBuildInfo` target turns it into the constant the `BepInPlugin` attribute
+uses, and the packaging script reads the same property to fill in
+`manifest.json`. To ship a new version: bump the csproj, write the changelog, run
+the script.
 
-O ícone sai de `packaging/make-icon.ps1`, que desenha o PNG por código. Mude a
-paleta no topo do arquivo e rode de novo.
+The icon comes from `packaging/make-icon.ps1`, which draws the PNG in code.
+Change the palette at the top of that file and run it again.
 
-Para a página da Nexus, `docs/nexus-description.bbcode` já está em BBCode,
-pronto para colar no campo de descrição.
+`docs/nexus-description.bbcode` holds the Nexus page description in BBCode,
+ready to paste.
 
-## Checagem de compatibilidade depois de um update
+## Compatibility check after a game update
 
-`tools/PatchCheck` abre o `assembly_valheim.dll` com Mono.Cecil e confere que os
-nove métodos alvo continuam existindo com a mesma assinatura, que cada chamada de
-inventário que os transpilers procuram ainda está lá, e que as assinaturas do
-`InventoryBridge` batem com as do jogo.
+`tools/PatchCheck` opens `assembly_valheim.dll` with Mono.Cecil and asserts that
+the nine target methods still exist with the same signature, that every inventory
+call the transpilers look for is still there, and that the `InventoryBridge`
+signatures still line up with the game's.
 
 ```
 cd tools/PatchCheck
 dotnet run
 ```
 
-Saída esperada: `ALL CHECKS PASSED`. Rode isso primeiro sempre que o Valheim
-atualizar, antes de abrir o jogo.
+Expected output: `ALL CHECKS PASSED`. Run it first whenever Valheim updates,
+before launching the game.
 
-## Limitações conhecidas
+## Known limitations
 
-- Reparo não custa material no Valheim, então não há nada a fazer ali.
-- Fornalhas, fogueiras e outras estações que consomem minério/lenha por interação
-  direta não são alimentadas pelos baús. O mod cobre craft, upgrade e construção.
-- Um baú que outro jogador tem aberto naquele instante é ignorado até ele fechar.
+- Repairing costs no materials in Valheim, so there is nothing to do there.
+- Smelters, kilns and other stations that take ore or wood through direct
+  interaction are not fed from chests. The mod covers crafting, upgrading and
+  building.
+- A chest another player has open at that moment is skipped until they close it.
+- Ownership of a chest is claimed without asking the current owner over RPC, the
+  way the game does when you open one. The local copy is refreshed once a second
+  by the game's own `CheckForChanges`, so there is a short window in which two
+  players touching the same chest at the same instant can have the last writer
+  win.
