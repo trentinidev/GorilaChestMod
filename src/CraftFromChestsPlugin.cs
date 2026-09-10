@@ -14,7 +14,8 @@ namespace CraftFromChests
     {
         public const string PluginGuid = "dev.trentini.craftfromchests";
         public const string PluginName = "CraftFromChests";
-        public const string PluginVersion = "1.0.0";
+        /// <summary>Set by the Version property in the csproj, generated at build time.</summary>
+        public const string PluginVersion = BuildInfo.Version;
 
         internal static ManualLogSource Log;
 

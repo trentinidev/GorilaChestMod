@@ -19,17 +19,41 @@ mochila e só depois dos baús, do mais perto para o mais longe.
 Como o backend é Mono (e não IL2CPP), o caminho normal de modding continua valendo:
 BepInEx 5 + Harmony, com patches em memória. Nenhum arquivo do jogo é alterado.
 
-## Instalação
+## Instalação manual
 
-1. Instale o **BepInEx 5** para Valheim na pasta do jogo
-   (`S:\SteamLibrary\steamapps\common\Valheim`). Rode o jogo uma vez para o BepInEx
-   gerar as pastas dele.
-2. Copie `CraftFromChests.dll` para `Valheim/BepInEx/plugins/CraftFromChests/`.
+1. Instale o **BepInEx 5** para Valheim na pasta do jogo, o pacote
+   `denikson-BepInExPack_Valheim`. Rode o jogo uma vez para ele gerar as pastas.
+2. Copie `CraftFromChests.dll` para `Valheim/BepInEx/plugins/CraftFromChests/`,
+   ou extraia o zip `-nexus.zip` por cima da pasta do jogo.
 3. Suba o jogo. O log em `Valheim/BepInEx/LogOutput.log` deve trazer uma linha
    `CraftFromChests 1.0.0 loaded`.
 
 O `dotnet build` já copia a DLL para `BepInEx/plugins/CraftFromChests/`
 automaticamente, se essa pasta existir.
+
+## Instalação pelo r2modman
+
+O r2modman e o Thunderstore Mod Manager mantêm o BepInEx dentro do perfil deles,
+então **não misture com uma instalação manual na raiz do jogo**. Se você já tem
+uma, apague de `Valheim/` o `winhttp.dll`, o `doorstop_config.ini`, o
+`.doorstop_version`, a pasta `doorstop_libs` e a pasta `BepInEx` antes de migrar.
+Dois BepInEx no mesmo jogo é a causa clássica de mod carregando duas vezes ou
+não carregando.
+
+Três formas de gerenciar este mod por lá, da mais rápida para a mais completa:
+
+| Forma | Como | O que você ganha e o que perde |
+| --- | --- | --- |
+| DLL solta | `Import local mod` apontando para `CraftFromChests.dll` | Funciona na hora. Você digita nome e versão na mão, sem ícone e sem dependência automática do BepInEx. |
+| Zip local | `Import local mod` apontando para `dist/CraftFromChests-<versão>-thunderstore.zip` | Ícone, versão, descrição e o BepInEx instalado como dependência. Continua privado, nada é publicado. |
+| Thunderstore | Publicar o mesmo zip em thunderstore.io | Instalação e atualização pela busca do próprio r2modman, para você e para qualquer outra pessoa. |
+
+A Nexus não entra nessa lista. O r2modman não instala mod da Nexus, e o
+gerenciador da Nexus é o Vortex. Publicar nos dois é comum, mas quem baixa da
+Nexus instala manualmente ou pelo Vortex.
+
+No r2modman o arquivo de configuração fica dentro do perfil, e não em
+`Valheim/BepInEx/config`. O próprio gerenciador tem editor de config.
 
 ## Configuração
 
@@ -102,7 +126,36 @@ dotnet build -c Release -p:ValheimDir="D:\Steam\steamapps\common\Valheim"
 ```
 
 As referências do jogo vêm direto de `valheim_Data/Managed`, e o BepInEx/Harmony
-vêm do feed NuGet do próprio BepInEx (já configurado em `nuget.config`).
+vêm do feed NuGet do próprio BepInEx, já configurado em `nuget.config`.
+
+## Empacotar e publicar
+
+```
+powershell -ExecutionPolicy Bypass -File packaging\build-package.ps1
+```
+
+Gera em `dist/` os dois zips de release:
+
+| Zip | Conteúdo | Para onde vai |
+| --- | --- | --- |
+| `-thunderstore.zip` | `manifest.json`, `icon.png`, README, changelog e a DLL na raiz | Thunderstore, ou `Import local mod` do r2modman |
+| `-nexus.zip` | `BepInEx/plugins/CraftFromChests/CraftFromChests.dll` mais README e changelog | Nexus Mods, o jogador extrai por cima da pasta do jogo |
+
+O script valida o que costuma reprovar upload antes de gerar o zip: versão em
+`x.y.z`, ícone exatamente 256 por 256, nome do manifest só com letras, dígitos e
+sublinhado, e descrição dentro do limite de 250 caracteres. Ele também confere
+que a versão da DLL compilada bate com a do csproj.
+
+A versão vive **só** em `<Version>` no `CraftFromChests.csproj`. O alvo
+`GenerateBuildInfo` gera de lá a constante que o atributo `BepInPlugin` usa, e o
+script de pacote lê a mesma propriedade para preencher o `manifest.json`. Para
+lançar uma versão nova: mexa no csproj, escreva o changelog, rode o script.
+
+O ícone sai de `packaging/make-icon.ps1`, que desenha o PNG por código. Mude a
+paleta no topo do arquivo e rode de novo.
+
+Para a página da Nexus, `docs/nexus-description.bbcode` já está em BBCode,
+pronto para colar no campo de descrição.
 
 ## Checagem de compatibilidade depois de um update
 
