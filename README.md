@@ -1,11 +1,16 @@
-# CraftFromChests
+# GorilaChestMod
 
-A client side **Valheim** mod that lets you craft, upgrade and build using the
-items inside nearby chests, without hauling anything into your inventory first.
+Chest quality of life for **Valheim**, in three parts:
 
-The recipe list, the have/need numbers and the craft button all count the
-contents of the chests around you. When you craft, the items in your own
-inventory are spent first, then the chests, closest one first.
+1. **Craft from chests.** Craft, upgrade and build using the items inside the
+   chests around you, without hauling anything into your inventory first.
+2. **Oversized chest stacks.** A chest slot holds far more than the vanilla
+   limit, 1000 by default, so a chest full of wood is one slot instead of twenty.
+   Your own inventory keeps the vanilla limits.
+3. **Quick stack.** One button, or a hotkey, that pushes matching items from your
+   inventory into the chests in range.
+
+Runs on the client and on a dedicated server.
 
 ## Game version this was built against
 
@@ -19,55 +24,58 @@ inventory are spent first, then the chests, closest one first.
 Because the backend is Mono and not IL2CPP, the usual modding path still applies:
 BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 
-## Manual install
+## Install
 
-1. Install **BepInEx 5** for Valheim in the game folder, the
-   `denikson-BepInExPack_Valheim` package. Launch the game once so it creates its
-   folders.
-2. Copy `CraftFromChests.dll` into `Valheim/BepInEx/plugins/CraftFromChests/`, or
+1. Install **BepInEx 5** for Valheim, the `denikson-BepInExPack_Valheim` package.
+   Launch the game once so it creates its folders.
+2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
-3. Start the game. `Valheim/BepInEx/LogOutput.log` should contain a line reading
-   `CraftFromChests 1.0.0 loaded`.
+3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
+   `GorilaChestMod 2.0.0 loaded`.
 
-`dotnet build` already copies the dll into `BepInEx/plugins/CraftFromChests/`
-when that folder exists.
+With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
+`-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
+install in the game root, that is the classic cause of a mod loading twice or
+not loading at all.
 
-## Installing through r2modman
+### On a dedicated server
 
-r2modman and Thunderstore Mod Manager keep BepInEx inside their own profile, so
-**do not mix them with a manual install in the game root**. If you have one,
-delete `winhttp.dll`, `doorstop_config.ini`, `.doorstop_version`, the
-`doorstop_libs` folder and the `BepInEx` folder from `Valheim/` before you
-migrate. Two BepInEx installs in one game is the classic cause of a mod loading
-twice or not loading at all.
+Install it the same way, into the server's `BepInEx/plugins`. **Every player
+needs it as well.** The server half exists for two reasons:
 
-Three ways to manage this mod there, quickest first:
+- A server that loads a chest into memory decides how large its stacks may be. A
+  vanilla server would clamp an oversized stack back to the vanilla limit and
+  destroy the excess the next time it wrote that chest out.
+- The server hands its chest stack settings to every client as they connect, so
+  the whole session agrees on the limit.
 
-| Way | How | What you get, what you give up |
-| --- | --- | --- |
-| Loose dll | `Import local mod`, pick `CraftFromChests.dll` | Works right away. You type the name and version by hand, no icon and no automatic BepInEx dependency. |
-| Local zip | `Import local mod`, pick `dist/CraftFromChests-<version>-thunderstore.zip` | Icon, version, description and BepInEx pulled in as a dependency. Stays private, nothing is published. |
-| Thunderstore | Publish that same zip on thunderstore.io | Install and update straight from the r2modman browser, for you and for anyone else. |
-
-Nexus Mods is not part of that list. r2modman does not install mods from Nexus,
-and the Nexus manager is Vortex. Publishing on both is common, but a Nexus
-download is installed manually or through Vortex.
-
-Under r2modman the config file lives inside the profile, not in
-`Valheim/BepInEx/config`. The manager has its own config editor.
+Craft from chests and quick stack are decided entirely on the player's own
+machine, so those two still work fine against a vanilla server.
 
 ## Configuration
 
-`BepInEx/config/dev.trentini.craftfromchests.cfg` is written on first launch and
+`BepInEx/config/dev.trentini.gorilachestmod.cfg` is written on first launch and
 can be edited with the game closed.
 
-| Option | Default | What it does |
-| --- | --- | --- |
-| `Enabled` | `true` | Master switch, turns the mod off without removing it. |
-| `Range` | `20` | Radius in meters that chests are pulled from. |
-| `UseForBuilding` | `true` | Also pay hammer, hoe and cultivator costs from chests. |
-| `IncludeVehicleContainers` | `true` | Include containers on carts and ships. |
-| `Verbose` | `false` | Log every chest withdrawal and every redirected call. |
+| Section | Option | Default | What it does |
+| --- | --- | --- | --- |
+| Craft from chests | `Enabled` | `true` | Count nearby chests when crafting, upgrading and building. |
+| Craft from chests | `Range` | `20` | Radius in meters. Quick stack uses the same radius. |
+| Craft from chests | `UseForBuilding` | `true` | Also pay hammer, hoe and cultivator costs from chests. |
+| Craft from chests | `IncludeVehicleContainers` | `true` | Include containers on carts and ships. |
+| Chest stacks | `Enabled` | `true` | Allow oversized stacks inside chests. |
+| Chest stacks | `ChestStackSize` | `1000` | How much one chest slot may hold. The server's value wins. |
+| Quick stack | `Enabled` | `true` | Enable the button and the hotkey. |
+| Quick stack | `SkipHotbar` | `true` | Leave the hotbar row alone. |
+| Quick stack | `ShowButton` | `true` | Show the button in the inventory screen. |
+| Quick stack | `ButtonOffset` | `0, 0` | Nudge the button in pixels if it lands on something else. |
+| Quick stack | `ButtonLabel` | `Quick Stack` | Caption on the button. |
+| Quick stack | `Hotkey` | `None` | Hotkey while the inventory is open. |
+| Debug | `Verbose` | `false` | Log every withdrawal, move and patched call. |
+
+When you are connected to a server that has the mod, that server's
+`Enabled` and `ChestStackSize` under Chest stacks replace your local values for
+as long as you are connected. Everything else stays personal.
 
 ## Which chests count
 
@@ -82,20 +90,18 @@ to open it:
 
 Before taking anything the mod claims network ownership of the chest through
 `ZNetView.ClaimOwnership`, which is what authorises writing the inventory back
-into the ZDO. That is the same mechanism the game uses for "take all", so this
-works on a dedicated server with no server side mod. It is a **client side only**
-mod: players without it are unaffected.
+into the ZDO. That is the same mechanism the game uses for "take all".
 
 ## How it works
+
+### Craft from chests
 
 The game methods read the player inventory straight from the `m_inventory`
 field, with no extension point anywhere. Rather than injecting fake items into
 your backpack, the mod uses transpilers to rewrite only the inventory calls
-inside seven game methods. An instance call already carries `this` as its first
-stack argument, so a static method whose first parameter is the `Inventory` is a
+inside these methods. An instance call already carries `this` as its first stack
+argument, so a static method whose first parameter is the `Inventory` is a
 drop-in replacement and the rest of the method body is left untouched.
-
-Calls redirected into `InventoryBridge`:
 
 | Game method | Call swapped | Why |
 | --- | --- | --- |
@@ -106,14 +112,51 @@ Calls redirected into `InventoryBridge`:
 | `InventoryGui.DoCrafting` | `RemoveItem` | pays the single ingredient |
 | `InventoryGui.SetupRequirement` | `CountItems` | the have/need numbers in the UI |
 
-Three support patches on top of that: `Container.Awake` registers every chest
-that spawns, so no `FindObjectsOfType` sweep is ever needed, while
-`Player.UpdatePlacement` and `Hud.SetupPieceInfo` mark the building context so
-the `UseForBuilding` option can be honoured.
+`Container.Awake` registers every chest that spawns, so no `FindObjectsOfType`
+sweep is ever needed, and `Player.UpdatePlacement` and `Hud.SetupPieceInfo` mark
+the building context so `UseForBuilding` can be honoured.
 
-If a future game update removes one of those call sites, the transpiler writes a
-`LogError` into the BepInEx log naming the call it could not find, instead of
-failing silently.
+### Oversized chest stacks
+
+The stack limit is the plain field `ItemData.m_shared.m_maxStackSize`, read in a
+handful of places inside `Inventory` and `InventoryGrid`. A transpiler turns each
+of those field reads into a call that also receives the inventory being worked
+on, so the same item type answers 1000 in a chest and the vanilla 50 in a
+backpack. The list of methods is discovered from the game's own IL at startup
+rather than hard coded, and written to the log.
+
+That single change covers saving and loading too: the overload of
+`Inventory.AddItem` that rebuilds an inventory from its saved bytes clamps by the
+same field, which is why a vanilla server or a vanilla client would otherwise
+trim the excess away.
+
+Three guards keep oversized stacks from leaking out of chests:
+
+- `Inventory.AddItem(ItemData)` splits a stack that is too large for its
+  destination across several slots, so shift clicking 1000 wood out of a chest
+  gives you twenty vanilla stacks.
+- The slot targeted `Inventory.AddItem` moves only a vanilla sized portion and
+  reports the move as partial, so the rest stays in the chest.
+- `ItemDrop.DropItem` splits oversized stacks into several drops, so a destroyed
+  chest scatters normal stacks instead of one impossible pile.
+
+### Quick stack
+
+`InventoryGui.Awake` clones the game's own take all button into the player panel,
+so it inherits the vanilla look, font and sounds. It is shown while the inventory
+is open and there is a chest in range. Items move only into chests that already
+hold that item, equipped and quest items are skipped, and the hotbar is skipped
+unless you say otherwise.
+
+### Server side
+
+The plugin loads in `valheim_server.exe` as well as `valheim.exe`. On a server
+there is no local player, so craft from chests and quick stack simply never fire,
+while the stack limit patches do their job on every chest the server touches.
+
+Config sync is two routed RPCs of the game's own network layer: a client asks
+once it is connected, the server answers with its chest stack settings, and a
+server never takes those values from a client.
 
 ## Build
 
@@ -129,6 +172,8 @@ dotnet build -c Release -p:ValheimDir="D:\Steam\steamapps\common\Valheim"
 
 Game references come straight from `valheim_Data/Managed`, and BepInEx plus
 Harmony come from the BepInEx NuGet feed, already configured in `nuget.config`.
+The build copies the dll into the r2modman profile when that folder exists, and
+otherwise into the game's own plugins folder.
 
 ## Packaging and publishing
 
@@ -141,32 +186,26 @@ Writes both release zips into `dist/`:
 | Zip | Contents | Where it goes |
 | --- | --- | --- |
 | `-thunderstore.zip` | `manifest.json`, `icon.png`, readme, changelog and the dll at the root | Thunderstore, or `Import local mod` in r2modman |
-| `-nexus.zip` | `BepInEx/plugins/CraftFromChests/CraftFromChests.dll` plus readme and changelog | Nexus Mods, the player extracts it over the game folder |
+| `-nexus.zip` | `BepInEx/plugins/GorilaChestMod/GorilaChestMod.dll` plus readme and changelog | Nexus Mods, extracted over the game folder |
 
-The script validates what usually gets an upload rejected before it builds the
-zip: an `x.y.z` version, an icon that is exactly 256 by 256, a manifest name made
-only of letters, digits and underscores, and a description within the 250
-character limit. It also checks that the compiled dll carries the same version as
-the csproj.
+The script validates what usually gets an upload rejected: an `x.y.z` version, an
+icon that is exactly 256 by 256, a manifest name made only of letters, digits and
+underscores, and a description within the 250 character limit. It also checks
+that the compiled dll carries the same version as the csproj.
 
-The version lives **only** in `<Version>` in `CraftFromChests.csproj`. The
+The version lives **only** in `<Version>` in `GorilaChestMod.csproj`. The
 `GenerateBuildInfo` target turns it into the constant the `BepInPlugin` attribute
-uses, and the packaging script reads the same property to fill in
-`manifest.json`. To ship a new version: bump the csproj, write the changelog, run
-the script.
+uses, and the packaging script reads the same property for `manifest.json`.
 
 The icon comes from `packaging/make-icon.ps1`, which draws the PNG in code.
-Change the palette at the top of that file and run it again.
-
-`docs/nexus-description.bbcode` holds the Nexus page description in BBCode,
-ready to paste.
+`docs/nexus-description.bbcode` holds the Nexus page description, ready to paste.
 
 ## Compatibility check after a game update
 
 `tools/PatchCheck` opens `assembly_valheim.dll` with Mono.Cecil and asserts that
-the nine target methods still exist with the same signature, that every inventory
-call the transpilers look for is still there, and that the `InventoryBridge`
-signatures still line up with the game's.
+every method the mod patches still exists with the same signature, that every
+call site the transpilers rewrite is still there, that the stack limit is still
+read where it needs to be, and that the mod side signatures still line up.
 
 ```
 cd tools/PatchCheck
@@ -178,13 +217,13 @@ before launching the game.
 
 ## Known limitations
 
+- **Removing the mod leaves oversized stacks behind.** Vanilla clamps a stack
+  back to its normal limit when it loads a chest, and the excess is gone. Empty
+  your chests, or lower `ChestStackSize` and let the chests settle, before you
+  uninstall. The same applies to a player without the mod opening a chest that
+  holds oversized stacks.
 - Repairing costs no materials in Valheim, so there is nothing to do there.
 - Smelters, kilns and other stations that take ore or wood through direct
-  interaction are not fed from chests. The mod covers crafting, upgrading and
-  building.
+  interaction are not fed from chests. Crafting, upgrading and building are.
+- The quick stack button is mouse driven, there is no gamepad binding for it yet.
 - A chest another player has open at that moment is skipped until they close it.
-- Ownership of a chest is claimed without asking the current owner over RPC, the
-  way the game does when you open one. The local copy is refreshed once a second
-  by the game's own `CheckForChanges`, so there is a short window in which two
-  players touching the same chest at the same instant can have the last writer
-  win.

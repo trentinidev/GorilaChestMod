@@ -1,4 +1,4 @@
-namespace CraftFromChests
+namespace GorilaChestMod
 {
     /// <summary>
     /// Tracks whether the game is currently inside a building-related code path

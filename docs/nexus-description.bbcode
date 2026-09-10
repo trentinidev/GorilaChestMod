@@ -1,20 +1,21 @@
-[size=5]CraftFromChests[/size]
+[size=5]GorilaChestMod[/size]
 
-Craft, upgrade and build using the items inside nearby chests. No more hauling
-stacks of wood and iron into your inventory before every crafting session.
+Chest quality of life for Valheim, in three parts.
 
-[size=4]What it does[/size]
-[list]
-[*]The recipe list, the have/need numbers and the craft button all count the contents of nearby chests.
-[*]Hammer, hoe and cultivator building costs are paid from those chests too, and that part can be turned off.
-[*]Items in your own inventory are always spent first, then the chests, closest one first.
-[/list]
+[size=4]1. Craft from chests[/size]
+Craft, upgrade and build using the items inside the chests around you, without hauling anything into your inventory first. The recipe list, the have/need numbers and the craft button all count what is in range. Hammer, hoe and cultivator costs are covered too, and that part can be turned off.
+
+[size=4]2. Oversized chest stacks[/size]
+A chest slot holds far more than the vanilla limit, 1000 by default and configurable. A chest full of wood becomes one slot instead of twenty. Your own inventory keeps the vanilla limits, and a stack is split back into normal ones the moment it leaves a chest. Items that do not stack at all, like weapons and armour, are never touched.
+
+[size=4]3. Quick stack[/size]
+A button in the inventory screen, plus an optional hotkey, that pushes matching items from your inventory into the chests in range. An item only moves into a chest that already holds that item, so your sorting survives. The hotbar is left alone by default.
 
 [size=4]Which chests count[/size]
 A chest is only used if it passes the same rules the game applies when you try to open it: inside the configured radius, public or created by you, guard stone access when the chest checks for one, and nobody else has it open right now.
 
-[size=4]Multiplayer[/size]
-This is a client side mod. Only the player using it needs it installed, and it works on a vanilla dedicated server with no server side component. Before taking an item the mod claims network ownership of the chest, which is the same mechanism the game uses for "take all". Players without the mod are unaffected.
+[size=4]Multiplayer and dedicated servers[/size]
+Install it on every player's game, and on the dedicated server as well. The server needs it because a server that loads a chest decides how large its stacks may be, and a vanilla server would clamp an oversized stack back down and destroy the excess. The server also hands its chest stack settings to every client that connects, so the session agrees on one limit. Craft from chests and quick stack are decided on the player's own machine and work against a vanilla server too.
 
 [size=4]Requirements[/size]
 [list]
@@ -25,20 +26,17 @@ This is a client side mod. Only the player using it needs it installed, and it w
 [size=4]Installation[/size]
 [list=1]
 [*]Install BepInEx 5 for Valheim and run the game once.
-[*]Extract this archive into the Valheim folder, so the dll ends up in BepInEx\plugins\CraftFromChests\.
-[*]Start the game. BepInEx\LogOutput.log should contain a line reading CraftFromChests loaded.
+[*]Extract this archive into the Valheim folder, so the dll ends up in BepInEx\plugins\GorilaChestMod\.
+[*]Start the game. BepInEx\LogOutput.log should contain a line reading GorilaChestMod loaded.
 [/list]
 
 With r2modman or Thunderstore Mod Manager, use Import local mod and pick the Thunderstore flavoured zip instead.
 
 [size=4]Configuration[/size]
-Edit BepInEx\config\dev.trentini.craftfromchests.cfg with the game closed.
-[list]
-[*]Range, default 20 meters
-[*]UseForBuilding, default true
-[*]IncludeVehicleContainers, default true, covers carts and ships
-[*]Enabled, master switch
-[/list]
+Edit BepInEx\config\dev.trentini.gorilachestmod.cfg with the game closed. Range, chest stack size, quick stack hotkey, button caption and position are all in there.
+
+[size=4]Before you uninstall[/size]
+Vanilla trims a stack back to its normal limit when it loads a chest, and the excess is gone. Empty your chests, or lower the stack size and let the chests settle, before removing the mod.
 
 [size=4]Source[/size]
-[url=https://github.com/trentinidev/CraftFromChests]github.com/trentinidev/CraftFromChests[/url]
+[url=https://github.com/trentinidev/GorilaChestMod]github.com/trentinidev/GorilaChestMod[/url]

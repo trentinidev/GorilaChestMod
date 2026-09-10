@@ -6,17 +6,23 @@ $out = Join-Path $PSScriptRoot 'icon.png'
 $size = 256
 
 $bg       = [System.Drawing.Color]::FromArgb(255, 26, 32, 43)
-$bgEdge   = [System.Drawing.Color]::FromArgb(255, 16, 20, 28)
+$bgEdge   = [System.Drawing.Color]::FromArgb(255, 15, 19, 26)
+$furDark  = [System.Drawing.Color]::FromArgb(255, 44, 46, 54)
+$fur      = [System.Drawing.Color]::FromArgb(255, 70, 74, 86)
+$face     = [System.Drawing.Color]::FromArgb(255, 112, 100, 96)
+$faceLite = [System.Drawing.Color]::FromArgb(255, 138, 124, 118)
 $woodDark = [System.Drawing.Color]::FromArgb(255, 106, 66, 33)
 $wood     = [System.Drawing.Color]::FromArgb(255, 140, 90, 44)
 $woodLid  = [System.Drawing.Color]::FromArgb(255, 163, 106, 55)
 $iron     = [System.Drawing.Color]::FromArgb(255, 58, 63, 75)
-$ironLite = [System.Drawing.Color]::FromArgb(255, 96, 104, 120)
 $gold     = [System.Drawing.Color]::FromArgb(255, 217, 164, 65)
 
 $bmp = New-Object System.Drawing.Bitmap($size, $size)
 $g = [System.Drawing.Graphics]::FromImage($bmp)
 $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+
+function New-Brush($c) { New-Object System.Drawing.SolidBrush($c) }
+function New-Pen($c, $w) { New-Object System.Drawing.Pen($c, $w) }
 
 # background with a soft vignette
 $g.Clear($bg)
@@ -27,45 +33,40 @@ $brushVig.CenterColor = $bg
 $brushVig.SurroundColors = @($bgEdge)
 $g.FillRectangle($brushVig, 0, 0, $size, $size)
 
-function New-Brush($c) { New-Object System.Drawing.SolidBrush($c) }
-function New-Pen($c, $w) { New-Object System.Drawing.Pen($c, $w) }
+# ---- gorilla head, upper two thirds
+$g.FillEllipse((New-Brush $furDark), 36, 44, 40, 44)      # left ear
+$g.FillEllipse((New-Brush $furDark), 180, 44, 40, 44)     # right ear
+$g.FillEllipse((New-Brush $fur), 44, 52, 24, 28)          # ear inner
+$g.FillEllipse((New-Brush $fur), 188, 52, 24, 28)
 
-# ---- crafting hammer, tilted, sitting above the chest
-$state = $g.Save()
-$g.TranslateTransform(150, 74)
-$g.RotateTransform(32)
-$g.FillRectangle((New-Brush $woodDark), -7, -6, 14, 74)      # handle
-$g.FillRectangle((New-Brush $wood), -7, -6, 5, 74)           # handle highlight
-$g.FillRectangle((New-Brush $iron), -40, -30, 80, 30)        # head
-$g.FillRectangle((New-Brush $ironLite), -40, -30, 80, 8)     # head highlight
-$g.FillRectangle((New-Brush $bgEdge), -44, -26, 5, 22)       # head edge shadow
-$g.Restore($state)
+$g.FillEllipse((New-Brush $fur), 56, 20, 144, 132)        # skull
+$g.FillEllipse((New-Brush $furDark), 70, 26, 116, 46)     # brow ridge shadow
 
-# ---- chest
-$bodyX = 40; $bodyY = 148; $bodyW = 176; $bodyH = 68
-$lidX  = 40; $lidY  = 108; $lidW  = 176; $lidH  = 80
+$g.FillEllipse((New-Brush $face), 82, 74, 92, 76)         # face
+$g.FillEllipse((New-Brush $faceLite), 96, 104, 64, 44)    # muzzle
 
-$g.FillPie((New-Brush $woodLid), $lidX, $lidY, $lidW, $lidH, 180, 180)   # arched lid
-$g.FillRectangle((New-Brush $wood), $bodyX, $bodyY, $bodyW, $bodyH)      # body
+$g.FillEllipse((New-Brush $furDark), 100, 82, 20, 18)     # eyes
+$g.FillEllipse((New-Brush $furDark), 136, 82, 20, 18)
+$g.FillEllipse((New-Brush $bgEdge), 105, 86, 9, 9)
+$g.FillEllipse((New-Brush $bgEdge), 141, 86, 9, 9)
 
-# plank seams
+$g.FillEllipse((New-Brush $furDark), 114, 112, 9, 7)      # nostrils
+$g.FillEllipse((New-Brush $furDark), 133, 112, 9, 7)
+$g.DrawArc((New-Pen $furDark 4), 112, 122, 32, 16, 20, 140)  # mouth
+
+# ---- chest across the bottom, partly behind the head
+$bodyX = 28; $bodyY = 186; $bodyW = 200; $bodyH = 54
+$g.FillPie((New-Brush $woodLid), $bodyX, 154, $bodyW, 70, 180, 180)
+$g.FillRectangle((New-Brush $wood), $bodyX, $bodyY, $bodyW, $bodyH)
+
 $penSeam = New-Pen $woodDark 3
-foreach ($x in @(78, 116, 154, 192)) { $g.DrawLine($penSeam, $x, ($bodyY + 6), $x, ($bodyY + $bodyH - 6)) }
+foreach ($x in @(74, 118, 162)) { $g.DrawLine($penSeam, $x, ($bodyY + 4), $x, ($bodyY + $bodyH - 4)) }
 
-# iron bands
-$g.FillRectangle((New-Brush $iron), $bodyX, ($bodyY - 8), $bodyW, 16)    # seam band
-$g.FillRectangle((New-Brush $iron), 60, $bodyY, 14, $bodyH)
-$g.FillRectangle((New-Brush $iron), 182, $bodyY, 14, $bodyH)
-$g.DrawArc((New-Pen $iron 13), ($lidX + 8), ($lidY + 6), ($lidW - 16), ($lidH - 4), 180, 180)
-
-# gold latch
-$g.FillRectangle((New-Brush $gold), 116, ($bodyY - 14), 24, 30)
-$g.FillEllipse((New-Brush $bgEdge), 123, ($bodyY - 2), 10, 10)
-
-# ---- sparks flowing from the chest up into the hammer
-$g.FillEllipse((New-Brush $gold), 92, 92, 12, 12)
-$g.FillEllipse((New-Brush $gold), 74, 116, 8, 8)
-$g.FillEllipse((New-Brush $gold), 108, 66, 7, 7)
+$g.FillRectangle((New-Brush $iron), $bodyX, ($bodyY - 7), $bodyW, 14)
+$g.FillRectangle((New-Brush $iron), 48, $bodyY, 13, $bodyH)
+$g.FillRectangle((New-Brush $iron), 195, $bodyY, 13, $bodyH)
+$g.FillRectangle((New-Brush $gold), 116, ($bodyY - 13), 24, 28)
+$g.FillEllipse((New-Brush $bgEdge), 123, ($bodyY - 1), 10, 10)
 
 $g.Dispose()
 $bmp.Save($out, [System.Drawing.Imaging.ImageFormat]::Png)

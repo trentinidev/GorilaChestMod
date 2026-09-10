@@ -1,8 +1,32 @@
 # Changelog
 
+## 2.0.0
+
+Renamed from CraftFromChests to **GorilaChestMod**, and grew from one feature to
+three. The plugin id changed with the name, so the old
+`dev.trentini.craftfromchests.cfg` is not read any more, copy your settings over
+to `dev.trentini.gorilachestmod.cfg`.
+
+- **New: oversized chest stacks.** Items stack up to a configurable limit,
+  1000 by default, while they sit in a chest, so a slot no longer caps at the
+  vanilla 50. Player inventories keep the vanilla limits. Stacks are split back
+  into vanilla sized ones the moment they leave a chest, and a destroyed chest
+  drops normal stacks.
+- **New: quick stack.** A button in the inventory screen, plus an optional
+  hotkey, that pushes matching items from your inventory into the chests in
+  range. An item only moves into a chest that already holds that item, and the
+  hotbar is left alone by default.
+- **New: runs on a dedicated server.** The plugin no longer restricts itself to
+  the game client. A server holding a chest would otherwise clamp oversized
+  stacks back to the vanilla limit, so it needs the mod too. The server also
+  hands its chest stack settings to every client that connects.
+- Craft from chests is unchanged, and still counts nearby chests for crafting,
+  upgrading and building.
+- The compatibility checker in `tools/PatchCheck` now covers all three features.
+
 ## 1.0.0
 
-First release, built against Valheim 1.0.7.
+First release as CraftFromChests, built against Valheim 1.0.7.
 
 - Craft and upgrade at a workbench using the items inside chests within the
   configured radius.
@@ -14,4 +38,3 @@ First release, built against Valheim 1.0.7.
   first.
 - Honours the game's own access rules: radius, chest privacy, guard stones and
   chests another player has open.
-- Client side. Works on a dedicated server with no server side mod.

@@ -1,8 +1,8 @@
 {
-  "name": "CraftFromChests",
+  "name": "GorilaChestMod",
   "version_number": "{{VERSION}}",
-  "website_url": "https://github.com/trentinidev/CraftFromChests",
-  "description": "Craft, upgrade and build using the items inside nearby chests. Client side, works on vanilla servers.",
+  "website_url": "https://github.com/trentinidev/GorilaChestMod",
+  "description": "Craft and build from nearby chests, stack items far past the vanilla limit inside chests, and quick stack your inventory into them with one button.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2350"
   ]

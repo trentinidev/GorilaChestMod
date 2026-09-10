@@ -4,15 +4,15 @@
         powershell -ExecutionPolicy Bypass -File packaging\build-package.ps1
 
     Produces, in dist\:
-      CraftFromChests-<version>-thunderstore.zip
+      GorilaChestMod-<version>-thunderstore.zip
           manifest.json, icon.png, README.md, CHANGELOG.md and the dll at the root.
           Upload this to Thunderstore, or feed it to r2modman / Thunderstore Mod
           Manager through "Import local mod".
-      CraftFromChests-<version>-nexus.zip
-          BepInEx\plugins\CraftFromChests\CraftFromChests.dll, so the player can
+      GorilaChestMod-<version>-nexus.zip
+          BepInEx\plugins\GorilaChestMod\GorilaChestMod.dll, so the player can
           extract it straight over the Valheim folder. Upload this to Nexus Mods.
 
-    The version comes from <Version> in CraftFromChests.csproj and from nowhere
+    The version comes from <Version> in GorilaChestMod.csproj and from nowhere
     else, so bump it there and everything follows.
 #>
 [CmdletBinding()]
@@ -26,10 +26,10 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Drawing
 
 $root      = Split-Path -Parent $PSScriptRoot
-$csproj    = Join-Path $root 'CraftFromChests.csproj'
+$csproj    = Join-Path $root 'GorilaChestMod.csproj'
 $dist      = Join-Path $root 'dist'
 $stage     = Join-Path $root 'obj\package'
-$dll       = Join-Path $root 'bin\Release\CraftFromChests.dll'
+$dll       = Join-Path $root 'bin\Release\GorilaChestMod.dll'
 $icon      = Join-Path $PSScriptRoot 'icon.png'
 $template  = Join-Path $PSScriptRoot 'manifest.template.json'
 
@@ -92,18 +92,18 @@ function New-Zip {
 $readme    = Join-Path $root 'README.md'
 $changelog = Join-Path $root 'CHANGELOG.md'
 
-$thunderstoreZip = Join-Path $dist "CraftFromChests-$version-thunderstore.zip"
+$thunderstoreZip = Join-Path $dist "GorilaChestMod-$version-thunderstore.zip"
 New-Zip -Path $thunderstoreZip -Entries @(
     @{ Source = $manifestPath; Name = 'manifest.json' }
     @{ Source = $icon;         Name = 'icon.png' }
     @{ Source = $readme;       Name = 'README.md' }
     @{ Source = $changelog;    Name = 'CHANGELOG.md' }
-    @{ Source = $dll;          Name = 'CraftFromChests.dll' }
+    @{ Source = $dll;          Name = 'GorilaChestMod.dll' }
 )
 
-$nexusZip = Join-Path $dist "CraftFromChests-$version-nexus.zip"
+$nexusZip = Join-Path $dist "GorilaChestMod-$version-nexus.zip"
 New-Zip -Path $nexusZip -Entries @(
-    @{ Source = $dll;       Name = 'BepInEx/plugins/CraftFromChests/CraftFromChests.dll' }
+    @{ Source = $dll;       Name = 'BepInEx/plugins/GorilaChestMod/GorilaChestMod.dll' }
     @{ Source = $readme;    Name = 'README.md' }
     @{ Source = $changelog; Name = 'CHANGELOG.md' }
 )

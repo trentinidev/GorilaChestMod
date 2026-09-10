@@ -1,41 +1,71 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CraftFromChests
+namespace GorilaChestMod
 {
     /// <summary>
-    /// Keeps track of every <see cref="Container"/> that spawned in the world and
-    /// answers "which containers may the local player use right now?". Containers
-    /// register themselves through a postfix on Container.Awake, so no
+    /// Keeps track of every <see cref="Container"/> that spawned in the world.
+    /// Containers register themselves through a postfix on Container.Awake, so no
     /// FindObjectsOfType sweep is ever needed.
+    ///
+    /// Two questions are answered here: which chests may the local player use
+    /// right now, and is a given inventory a chest inventory. The second one runs
+    /// on a dedicated server too, where there is no local player at all.
     /// </summary>
     internal static class ContainerTracker
     {
         /// <summary>The nearby list is rebuilt at most this often; the UI asks many times per frame.</summary>
-        private const float CacheSeconds = 0.25f;
+        private const float NearbyCacheSeconds = 0.25f;
+
+        /// <summary>How often destroyed containers are swept out of the registry.</summary>
+        private const float PruneSeconds = 5f;
 
         private static readonly HashSet<Container> Known = new HashSet<Container>();
+        private static readonly HashSet<Inventory> ContainerInventories = new HashSet<Inventory>();
         private static readonly List<Container> Nearby = new List<Container>();
 
         private static float _nextRefresh;
+        private static float _nextPrune;
         private static Vector3 _origin;
 
         internal static void Register(Container container)
         {
-            if (container != null)
+            if (container == null)
             {
-                Known.Add(container);
+                return;
+            }
+
+            Known.Add(container);
+
+            Inventory inventory = container.GetInventory();
+            if (inventory != null)
+            {
+                ContainerInventories.Add(inventory);
             }
         }
 
         internal static void Clear()
         {
             Known.Clear();
+            ContainerInventories.Clear();
             Nearby.Clear();
             _nextRefresh = 0f;
+            _nextPrune = 0f;
         }
 
-        /// <summary>Containers the player may draw from, closest first. The list is reused, do not store it.</summary>
+        /// <summary>True when this inventory belongs to a chest, a cart, a ship or any other container.</summary>
+        internal static bool IsContainerInventory(Inventory inventory)
+        {
+            if (inventory == null)
+            {
+                return false;
+            }
+
+            Prune();
+            return ContainerInventories.Contains(inventory);
+        }
+
+        /// <summary>Chests the player may draw from, closest first. The list is reused, do not store it.</summary>
         internal static List<Container> GetNearby()
         {
             if (Time.time < _nextRefresh)
@@ -43,9 +73,37 @@ namespace CraftFromChests
                 return Nearby;
             }
 
-            _nextRefresh = Time.time + CacheSeconds;
+            _nextRefresh = Time.time + NearbyCacheSeconds;
             Refresh();
             return Nearby;
+        }
+
+        /// <summary>Drops destroyed containers, and the inventories that went with them.</summary>
+        private static void Prune()
+        {
+            if (Time.time < _nextPrune)
+            {
+                return;
+            }
+
+            _nextPrune = Time.time + PruneSeconds;
+
+            int before = Known.Count;
+            Known.RemoveWhere(container => container == null);
+            if (Known.Count == before)
+            {
+                return;
+            }
+
+            ContainerInventories.Clear();
+            foreach (Container container in Known)
+            {
+                Inventory inventory = container.GetInventory();
+                if (inventory != null)
+                {
+                    ContainerInventories.Add(inventory);
+                }
+            }
         }
 
         private static void Refresh()
@@ -58,7 +116,7 @@ namespace CraftFromChests
                 return;
             }
 
-            Known.RemoveWhere(container => container == null);
+            Prune();
 
             _origin = player.transform.position;
             long playerId = Game.instance.GetPlayerProfile().GetPlayerID();
@@ -67,6 +125,11 @@ namespace CraftFromChests
 
             foreach (Container container in Known)
             {
+                if (container == null)
+                {
+                    continue;
+                }
+
                 if ((container.transform.position - _origin).sqrMagnitude > rangeSqr)
                 {
                     continue;

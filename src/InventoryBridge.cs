@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CraftFromChests
+namespace GorilaChestMod
 {
     /// <summary>
     /// Replacement targets for the Inventory calls that the transpilers redirect.
@@ -145,7 +145,7 @@ namespace CraftFromChests
 
                 if (!ContainerTracker.TryTakeOwnership(container))
                 {
-                    CraftFromChestsPlugin.Log.LogWarning(
+                    GorilaChestModPlugin.Log.LogWarning(
                         $"Could not take ownership of '{container.m_name}', skipping it for {name}.");
                     continue;
                 }
@@ -159,13 +159,13 @@ namespace CraftFromChests
 
                 if (ModConfig.Verbose.Value)
                 {
-                    CraftFromChestsPlugin.Log.LogInfo($"Took {taken}x {name} from '{container.m_name}'.");
+                    GorilaChestModPlugin.Log.LogInfo($"Took {taken}x {name} from '{container.m_name}'.");
                 }
             }
 
             if (remaining > 0)
             {
-                CraftFromChestsPlugin.Log.LogWarning(
+                GorilaChestModPlugin.Log.LogWarning(
                     $"Still missing {remaining}x {name} after checking the player and {containers.Count} container(s).");
             }
         }

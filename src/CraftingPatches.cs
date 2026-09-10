@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 
-namespace CraftFromChests
+namespace GorilaChestMod
 {
     /// <summary>The vanilla calls that get redirected, resolved once.</summary>
     internal static class Swaps
