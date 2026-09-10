@@ -40,8 +40,11 @@ not loading at all.
 
 ### On a dedicated server
 
-Install it the same way, into the server's `BepInEx/plugins`. **Every player
-needs it as well.** The server half exists for two reasons:
+Full step by step for whoever runs the server, Windows, Linux and rented panels:
+**[docs/server-install.md](docs/server-install.md)**.
+
+The short version is the same as above, into the server's `BepInEx/plugins`, and
+**every player needs it as well**. The server half exists for two reasons:
 
 - A server that loads a chest into memory decides how large its stacks may be. A
   vanilla server would clamp an oversized stack back to the vanilla limit and
