@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.1.0
+
+Quick stack and chest slot polish, from playing the 2.0.0 build.
+
+- The quick stack button moved out of the item grid. It now sits under the weight
+  readout, to the side of the inventory, where it cannot cover a slot, and it is
+  wide enough for its caption.
+- The button is called **Stack to nearby chests**.
+- Amount labels shrink as the numbers grow, so a slot holding 100000 of something
+  still reads cleanly instead of spilling over its neighbours. Turn it off with
+  `ShrinkStackText`.
+- The hotkey works with the inventory closed, so you can stand next to your
+  chests and press it. `HotkeyNeedsInventory` brings the old behaviour back. It
+  stays quiet while a menu, the console, the chat or a text field has focus.
+
 ## 2.0.0
 
 Renamed from CraftFromChests to **GorilaChestMod**, and grew from one feature to

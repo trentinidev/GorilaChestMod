@@ -21,6 +21,7 @@ namespace GorilaChestMod
         private static void Postfix()
         {
             QuickStackButton.Destroy();
+            StackText.Forget();
         }
     }
 
@@ -37,15 +38,36 @@ namespace GorilaChestMod
 
             QuickStackButton.UpdateVisibility();
 
-            if (!InventoryGui.IsVisible() || Console.IsVisible() || Chat.instance?.HasFocus() == true)
+            if (!ModConfig.QuickStackHotkey.Value.IsDown() || !CanTakeHotkey())
             {
                 return;
             }
 
-            if (ModConfig.QuickStackHotkey.Value.IsDown())
+            QuickStack.Run();
+        }
+
+        /// <summary>
+        /// The hotkey works out in the world, not only over an open inventory, so
+        /// everything that swallows keyboard input has to be ruled out by hand.
+        /// </summary>
+        private static bool CanTakeHotkey()
+        {
+            if (ModConfig.QuickStackHotkeyNeedsInventory.Value && !InventoryGui.IsVisible())
             {
-                QuickStack.Run();
+                return false;
             }
+
+            if (Menu.IsVisible() || Console.IsVisible() || TextInput.IsVisible())
+            {
+                return false;
+            }
+
+            if (Chat.instance != null && Chat.instance.HasFocus())
+            {
+                return false;
+            }
+
+            return !Player.m_localPlayer.IsDead();
         }
     }
 }

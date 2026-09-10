@@ -22,6 +22,10 @@ namespace GorilaChestMod
         internal static ConfigEntry<Vector2> QuickStackButtonOffset;
         internal static ConfigEntry<KeyboardShortcut> QuickStackHotkey;
         internal static ConfigEntry<string> QuickStackButtonLabel;
+        internal static ConfigEntry<bool> QuickStackHotkeyNeedsInventory;
+
+        // ---- chest slot text
+        internal static ConfigEntry<bool> ShrinkStackText;
 
         // ---- misc
         internal static ConfigEntry<bool> Verbose;
@@ -73,16 +77,24 @@ namespace GorilaChestMod
 
             QuickStackButtonOffset = config.Bind(
                 "3 - Quick stack", "ButtonOffset", new Vector2(0f, 0f),
-                "Nudge the button, in pixels, from its default spot in the inventory panel. " +
-                "Use this if it lands on top of something else in your resolution.");
+                "Nudge the button, in pixels, from its default spot under the weight readout, " +
+                "outside the inventory grid. Use this if it lands on top of something else in your resolution.");
 
             QuickStackHotkey = config.Bind(
                 "3 - Quick stack", "Hotkey", new KeyboardShortcut(KeyCode.None),
-                "Hotkey for quick stacking while the inventory is open. Set to None to use only the button.");
+                "Hotkey for quick stacking. Works with the inventory closed as well. Set to None to use only the button.");
+
+            QuickStackHotkeyNeedsInventory = config.Bind(
+                "3 - Quick stack", "HotkeyNeedsInventory", false,
+                "Require the inventory to be open before the hotkey does anything.");
 
             QuickStackButtonLabel = config.Bind(
-                "3 - Quick stack", "ButtonLabel", "Quick Stack",
+                "3 - Quick stack", "ButtonLabel", "Stack to nearby chests",
                 "Caption on the button. Change it if you play in another language.");
+
+            ShrinkStackText = config.Bind(
+                "2 - Chest stacks", "ShrinkStackText", true,
+                "Shrink the amount label on a slot when the numbers get long, so 100000/100000 still fits inside the square.");
 
             Verbose = config.Bind(
                 "4 - Debug", "Verbose", false,

@@ -12,11 +12,17 @@ namespace GorilaChestMod
     /// </summary>
     internal static class QuickStackButton
     {
+        /// <summary>Width the caption needs, the vanilla take all button is narrower than this.</summary>
+        private const float Width = 230f;
+
+        /// <summary>How far below the weight readout the button sits by default.</summary>
+        private static readonly Vector2 BelowWeight = new Vector2(0f, -74f);
+
         private static Button _button;
 
         internal static void Create(InventoryGui gui)
         {
-            if (gui == null || gui.m_takeAllButton == null || gui.m_player == null)
+            if (gui == null || gui.m_takeAllButton == null || gui.m_weight == null)
             {
                 GorilaChestModPlugin.Log.LogWarning("Inventory screen looks different than expected, the quick stack button was not created.");
                 return;
@@ -24,10 +30,13 @@ namespace GorilaChestMod
 
             Destroy();
 
-            _button = Object.Instantiate(gui.m_takeAllButton, gui.m_player);
+            // Parented next to the weight readout, which already lives outside the
+            // item grid, so the button never covers a slot.
+            RectTransform anchor = gui.m_weight.rectTransform;
+            _button = Object.Instantiate(gui.m_takeAllButton, anchor.parent);
             _button.name = "GorilaChestMod_QuickStack";
 
-            CopyPlacement(gui.m_takeAllButton, _button);
+            PlaceUnder(anchor, gui.m_takeAllButton, _button);
             SetLabel(_button, ModConfig.QuickStackButtonLabel.Value);
 
             _button.onClick.RemoveAllListeners();
@@ -76,11 +85,11 @@ namespace GorilaChestMod
         }
 
         /// <summary>
-        /// Puts the clone in the same relative spot of the player panel that the
-        /// original occupies in the container panel, then applies the configured
-        /// nudge. That keeps it inside the panel at any resolution.
+        /// Anchors the clone to whatever the weight readout is anchored to and drops
+        /// it below, so it follows the panel at any resolution and stays clear of the
+        /// grid. The configured offset nudges it from there.
         /// </summary>
-        private static void CopyPlacement(Button source, Button clone)
+        private static void PlaceUnder(RectTransform anchor, Button source, Button clone)
         {
             RectTransform from = source.GetComponent<RectTransform>();
             RectTransform to = clone.GetComponent<RectTransform>();
@@ -89,12 +98,12 @@ namespace GorilaChestMod
                 return;
             }
 
-            to.anchorMin = from.anchorMin;
-            to.anchorMax = from.anchorMax;
-            to.pivot = from.pivot;
-            to.sizeDelta = from.sizeDelta;
+            to.anchorMin = anchor.anchorMin;
+            to.anchorMax = anchor.anchorMax;
+            to.pivot = anchor.pivot;
             to.localScale = from.localScale;
-            to.anchoredPosition = from.anchoredPosition + ModConfig.QuickStackButtonOffset.Value;
+            to.sizeDelta = new Vector2(Width, from.sizeDelta.y);
+            to.anchoredPosition = anchor.anchoredPosition + BelowWeight + ModConfig.QuickStackButtonOffset.Value;
         }
 
         private static void SetLabel(Button button, string label)
@@ -112,6 +121,12 @@ namespace GorilaChestMod
             foreach (TMP_Text text in button.GetComponentsInChildren<TMP_Text>(true))
             {
                 text.text = label;
+
+                // The caption is longer than the vanilla one it was cloned from.
+                text.enableAutoSizing = true;
+                text.fontSizeMin = 10f;
+                text.fontSizeMax = text.fontSize;
+                text.textWrappingMode = TextWrappingModes.NoWrap;
             }
 
             UITooltip tooltip = button.GetComponent<UITooltip>();

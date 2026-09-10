@@ -31,7 +31,7 @@ BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
 3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
-   `GorilaChestMod 2.0.0 loaded`.
+   `GorilaChestMod 2.1.0 loaded`.
 
 With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
 `-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
@@ -68,12 +68,14 @@ can be edited with the game closed.
 | Craft from chests | `IncludeVehicleContainers` | `true` | Include containers on carts and ships. |
 | Chest stacks | `Enabled` | `true` | Allow oversized stacks inside chests. |
 | Chest stacks | `ChestStackSize` | `1000` | How much one chest slot may hold. The server's value wins. |
+| Chest stacks | `ShrinkStackText` | `true` | Shrink a slot label when the numbers get long, so 100000/100000 fits. |
 | Quick stack | `Enabled` | `true` | Enable the button and the hotkey. |
 | Quick stack | `SkipHotbar` | `true` | Leave the hotbar row alone. |
 | Quick stack | `ShowButton` | `true` | Show the button in the inventory screen. |
-| Quick stack | `ButtonOffset` | `0, 0` | Nudge the button in pixels if it lands on something else. |
-| Quick stack | `ButtonLabel` | `Quick Stack` | Caption on the button. |
-| Quick stack | `Hotkey` | `None` | Hotkey while the inventory is open. |
+| Quick stack | `ButtonOffset` | `0, 0` | Nudge the button in pixels from its spot under the weight readout. |
+| Quick stack | `ButtonLabel` | `Stack to nearby chests` | Caption on the button. |
+| Quick stack | `Hotkey` | `None` | Hotkey for quick stacking, inventory open or closed. |
+| Quick stack | `HotkeyNeedsInventory` | `false` | Require the inventory to be open for the hotkey. |
 | Debug | `Verbose` | `false` | Log every withdrawal, move and patched call. |
 
 When you are connected to a server that has the mod, that server's
@@ -145,9 +147,11 @@ Three guards keep oversized stacks from leaking out of chests:
 
 ### Quick stack
 
-`InventoryGui.Awake` clones the game's own take all button into the player panel,
-so it inherits the vanilla look, font and sounds. It is shown while the inventory
-is open and there is a chest in range. Items move only into chests that already
+`InventoryGui.Awake` clones the game's own take all button, so it inherits the
+vanilla look, font and sounds, and anchors it under the weight readout, outside
+the item grid. It is shown while the inventory is open and there is a chest in
+range. The hotkey works with the inventory closed too, and holds off while a
+menu, the console, the chat or a text field has focus. Items move only into chests that already
 hold that item, equipped and quest items are skipped, and the hotbar is skipped
 unless you say otherwise.
 
