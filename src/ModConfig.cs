@@ -94,7 +94,7 @@ namespace GorilaChestMod
 
             ShrinkStackText = config.Bind(
                 "2 - Chest stacks", "ShrinkStackText", true,
-                "Shrink the amount label on a slot when the numbers get long, so 100000/100000 still fits inside the square.");
+                "Keep the amount label on a slot readable when the numbers get long: a large limit is written as 100k, and the font shrinks from there. Turn off for the vanilla label.");
 
             Verbose = config.Bind(
                 "4 - Debug", "Verbose", false,

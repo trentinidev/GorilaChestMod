@@ -16,7 +16,7 @@ namespace GorilaChestMod
         private const float Width = 230f;
 
         /// <summary>How far below the weight readout the button sits by default.</summary>
-        private static readonly Vector2 BelowWeight = new Vector2(0f, -74f);
+        private static readonly Vector2 BelowWeight = new Vector2(0f, -132f);
 
         private static Button _button;
 

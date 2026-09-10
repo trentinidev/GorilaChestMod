@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1.1
+
+- The slot label fix from 2.1.0 never ran. It looked up InventoryElement as a
+  nested type of InventoryGrid, and that class is top level, so the lookup came
+  back empty and the postfix bailed out on its first line. It now references the
+  type directly, which the compiler checks.
+- A large limit is also written in short form now, so a chest slot reads
+  650/100k instead of 650/100000, and the font shrinks from there. That keeps
+  the number readable rather than merely small.
+- The quick stack button sits lower, fully clear of the inventory panel.
+
 ## 2.1.0
 
 Quick stack and chest slot polish, from playing the 2.0.0 build.
