@@ -3,3 +3,4 @@ obj/
 *.user
 dist/
 *.zip
+!download/*.zip
