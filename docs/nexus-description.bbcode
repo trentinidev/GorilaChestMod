@@ -6,10 +6,10 @@ Chest quality of life for Valheim, in three parts.
 Craft, upgrade and build using the items inside the chests around you, without hauling anything into your inventory first. The recipe list, the have/need numbers and the craft button all count what is in range. Hammer, hoe and cultivator costs are covered too, and that part can be turned off.
 
 [size=4]2. Oversized chest stacks[/size]
-A chest slot holds far more than the vanilla limit, 1000 by default and configurable. A chest full of wood becomes one slot instead of twenty. Your own inventory keeps the vanilla limits, and a stack is split back into normal ones the moment it leaves a chest. Items that do not stack at all, like weapons and armour, are never touched.
+A chest slot holds far more than the vanilla limit, 100000 by default and configurable. A chest full of wood becomes one slot instead of twenty. Your own inventory keeps the vanilla limits, and a stack is split back into normal ones the moment it leaves a chest. Items that do not stack at all, like weapons and armour, are never touched.
 
 [size=4]3. Quick stack[/size]
-A button in the inventory screen, plus an optional hotkey, that pushes matching items from your inventory into the chests in range. An item only moves into a chest that already holds that item, so your sorting survives. The hotbar is left alone by default.
+A button beside the inventory screen, plus the G hotkey, that pushes matching items from your inventory into the chests in range. G is free in the vanilla key list, unlike V, which the game uses for auto pickup, and the key can be changed or cleared in the config. An item only moves into a chest that already holds that item, so your sorting survives. The hotbar is left alone by default.
 
 [size=4]Which chests count[/size]
 A chest is only used if it passes the same rules the game applies when you try to open it: inside the configured radius, public or created by you, guard stone access when the chest checks for one, and nobody else has it open right now.
@@ -33,7 +33,7 @@ Install it on every player's game, and on the dedicated server as well. The serv
 With r2modman or Thunderstore Mod Manager, use Import local mod and pick the Thunderstore flavoured zip instead.
 
 [size=4]Configuration[/size]
-Edit BepInEx\config\dev.trentini.gorilachestmod.cfg with the game closed. Range, chest stack size, quick stack hotkey, button caption and position are all in there.
+Edit BepInEx\config\dev.trentini.gorilachestmod.cfg with the game closed. Range, chest stack size, the quick stack hotkey which defaults to G, and the button caption and position are all in there.
 
 [size=4]Before you uninstall[/size]
 Vanilla trims a stack back to its normal limit when it loads a chest, and the excess is gone. Empty your chests, or lower the stack size and let the chests settle, before removing the mod.

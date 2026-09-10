@@ -5,10 +5,11 @@ Chest quality of life for **Valheim**, in three parts:
 1. **Craft from chests.** Craft, upgrade and build using the items inside the
    chests around you, without hauling anything into your inventory first.
 2. **Oversized chest stacks.** A chest slot holds far more than the vanilla
-   limit, 1000 by default, so a chest full of wood is one slot instead of twenty.
-   Your own inventory keeps the vanilla limits.
-3. **Quick stack.** One button, or a hotkey, that pushes matching items from your
-   inventory into the chests in range.
+   limit, 100000 by default, so a chest full of wood is one slot instead of
+   twenty. Your own inventory keeps the vanilla limits.
+3. **Quick stack.** One button, or the **G** key, that pushes matching items from
+   your inventory into the chests in range. G is free in the vanilla key list,
+   unlike V, which the game already uses for auto pickup.
 
 Runs on the client and on a dedicated server.
 
@@ -31,7 +32,7 @@ BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
 3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
-   `GorilaChestMod 2.1.1 loaded`.
+   `GorilaChestMod 2.2.0 loaded`.
 
 With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
 `-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
@@ -67,14 +68,14 @@ can be edited with the game closed.
 | Craft from chests | `UseForBuilding` | `true` | Also pay hammer, hoe and cultivator costs from chests. |
 | Craft from chests | `IncludeVehicleContainers` | `true` | Include containers on carts and ships. |
 | Chest stacks | `Enabled` | `true` | Allow oversized stacks inside chests. |
-| Chest stacks | `ChestStackSize` | `1000` | How much one chest slot may hold. The server's value wins. |
+| Chest stacks | `ChestStackSize` | `100000` | How much one chest slot may hold. The server's value wins. |
 | Chest stacks | `ShrinkStackText` | `true` | Shrink a slot label when the numbers get long, so 100000/100000 fits. |
 | Quick stack | `Enabled` | `true` | Enable the button and the hotkey. |
 | Quick stack | `SkipHotbar` | `true` | Leave the hotbar row alone. |
 | Quick stack | `ShowButton` | `true` | Show the button in the inventory screen. |
-| Quick stack | `ButtonOffset` | `0, 0` | Nudge the button in pixels from its spot under the weight readout. |
+| Quick stack | `ButtonOffset` | `0, 0` | Nudge the button in canvas units from its spot beside the weight readout. |
 | Quick stack | `ButtonLabel` | `Stack to nearby chests` | Caption on the button. |
-| Quick stack | `Hotkey` | `None` | Hotkey for quick stacking, inventory open or closed. |
+| Quick stack | `Hotkey` | `G` | Hotkey for quick stacking, inventory open or closed. |
 | Quick stack | `HotkeyNeedsInventory` | `false` | Require the inventory to be open for the hotkey. |
 | Debug | `Verbose` | `false` | Log every withdrawal, move and patched call. |
 

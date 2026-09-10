@@ -56,9 +56,9 @@ namespace GorilaChestMod
                 "The player inventory keeps the vanilla limits.");
 
             ChestStackSize = config.Bind(
-                "2 - Chest stacks", "ChestStackSize", 1000,
+                "2 - Chest stacks", "ChestStackSize", 100000,
                 new ConfigDescription(
-                    "Stack size a chest slot may hold. Items whose vanilla limit is already higher keep theirs, " +
+                    "Stack size a chest slot may hold, 100000 by default. Items whose vanilla limit is already higher keep theirs, " +
                     "and items that do not stack at all, like weapons and armour, are never affected. " +
                     "On a server this value is handed to every client that connects.",
                     new AcceptableValueRange<int>(1, 100000)));
@@ -81,8 +81,9 @@ namespace GorilaChestMod
                 "outside the inventory grid. Use this if it lands on top of something else in your resolution.");
 
             QuickStackHotkey = config.Bind(
-                "3 - Quick stack", "Hotkey", new KeyboardShortcut(KeyCode.None),
-                "Hotkey for quick stacking. Works with the inventory closed as well. Set to None to use only the button.");
+                "3 - Quick stack", "Hotkey", new KeyboardShortcut(KeyCode.G),
+                "Hotkey for quick stacking. Works with the inventory closed as well. G is free in the vanilla key list, " +
+                "unlike V which the game uses for auto pickup. Set to None to use only the button.");
 
             QuickStackHotkeyNeedsInventory = config.Bind(
                 "3 - Quick stack", "HotkeyNeedsInventory", false,

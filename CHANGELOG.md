@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.2.0
+
+- The quick stack hotkey defaults to **G**. V, the old suggestion, is taken by
+  the game for auto pickup.
+- Chest slots default to **100000** per stack, up from 1000.
+- The button became a compact square with the caption wrapped inside it, and it
+  moved further out to the side.
+- It is no longer buried behind an open chest. It is parented to the root that
+  holds both panels and drawn last, so nothing covers it, and it stays glued to
+  the weight readout.
+
 ## 2.1.1
 
 - The slot label fix from 2.1.0 never ran. It looked up InventoryElement as a
