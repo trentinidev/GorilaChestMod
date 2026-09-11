@@ -1,17 +1,28 @@
 # Download
 
-The built package, committed here so it can be grabbed straight from the file
-list without building the project or opening the releases page.
+Built packages, committed here so they can be grabbed straight from the file list
+without building the project or opening the releases page.
 
 | File | Use it for |
 | --- | --- |
-| `GorilaChestMod-2.2.2-thunderstore.zip` | Thunderstore upload, and `Import local mod` in r2modman or Thunderstore Mod Manager |
+| `GorilaChestMod-2.2.2-thunderstore.zip` | Thunderstore upload, and `Import local mod` in r2modman or Thunderstore Mod Manager. The dll sits at the root. |
+| `GorilaChestMod-2.2.2-nexus.zip` | **Dedicated server and manual installs.** It already has the `BepInEx/plugins/GorilaChestMod/` layout, so it extracts straight over the game or server folder. |
 
-Same file as the asset on the [v2.2.2 release](https://github.com/trentinidev/GorilaChestMod/releases/tag/v2.2.2).
+Both hold the same dll, only the folder layout differs.
 
-For a manual or dedicated server install, the dll inside goes to
-`BepInEx/plugins/GorilaChestMod/`. See [../docs/server-install.md](../docs/server-install.md).
+The mod is also on Thunderstore at
+[trentinidev/GorilaChestMod](https://thunderstore.io/c/valheim/p/trentinidev/GorilaChestMod/),
+and every version is attached to its
+[GitHub release](https://github.com/trentinidev/GorilaChestMod/releases).
+
+## Server
+
+A dedicated server needs BepInEx and this mod, and every player needs the same
+version. Step by step, Windows, Linux and rented panels:
+[../docs/server-install.md](../docs/server-install.md).
+
+r2modman cannot deploy to a remote server. It manages a local profile folder, so
+files still have to be uploaded to the server by FTP, SSH or the host's panel.
 
 `packaging/build-package.ps1` writes every build into `dist/`, which stays out of
-the repository. Only the file above is committed, and it is refreshed when a
-version ships.
+the repository. The files above are refreshed when a version ships.
