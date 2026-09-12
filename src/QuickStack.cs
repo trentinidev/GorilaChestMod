@@ -11,14 +11,6 @@ namespace GorilaChestMod
     /// </summary>
     internal static class QuickStack
     {
-        /// <summary>True when there is at least one chest in range to stack into.</summary>
-        internal static bool HasTargets()
-        {
-            return ModConfig.QuickStackEnabled.Value &&
-                   Player.m_localPlayer != null &&
-                   ContainerTracker.GetNearby().Count > 0;
-        }
-
         /// <summary>Runs a quick stack and tells the player what happened. Returns how many items moved.</summary>
         internal static int Run()
         {

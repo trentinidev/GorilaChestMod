@@ -18,6 +18,15 @@ namespace GorilaChestMod
     /// </summary>
     internal static class ChestStacks
     {
+        /// <summary>
+        /// While a saved chest is being rebuilt, the stack coming off disk sets a
+        /// floor for the limit. Lowering ChestStackSize would otherwise trim
+        /// chests that were filled under the old setting, and the excess would be
+        /// gone for good. Chests never grow past the configured size, they are
+        /// only allowed to keep what they already hold.
+        /// </summary>
+        internal static int LoadFloor;
+
         internal static int MaxStackFor(ItemDrop.ItemData.SharedData shared, Inventory inventory)
         {
             if (shared == null)
@@ -43,7 +52,7 @@ namespace GorilaChestMod
                 return vanilla;
             }
 
-            return Mathf.Max(vanilla, ModConfig.ChestStackSize.Value);
+            return Mathf.Max(vanilla, Mathf.Max(ModConfig.ChestStackSize.Value, LoadFloor));
         }
 
         /// <summary>

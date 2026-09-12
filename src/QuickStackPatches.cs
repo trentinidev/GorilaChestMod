@@ -2,30 +2,20 @@ using HarmonyLib;
 
 namespace GorilaChestMod
 {
-    /// <summary>Creates the button once the inventory screen exists.</summary>
-    [HarmonyPatch(typeof(InventoryGui), "Awake")]
-    internal static class InventoryGuiAwakePatch
-    {
-        private static void Postfix(InventoryGui __instance)
-        {
-            if (ModConfig.QuickStackEnabled.Value)
-            {
-                QuickStackButton.Create(__instance);
-            }
-        }
-    }
-
     [HarmonyPatch(typeof(InventoryGui), "OnDestroy")]
     internal static class InventoryGuiOnDestroyPatch
     {
         private static void Postfix()
         {
-            QuickStackButton.Destroy();
             StackText.Forget();
         }
     }
 
-    /// <summary>Keeps the button in sync with what is around the player, and reads the hotkey.</summary>
+    /// <summary>
+    /// Reads the quick stack hotkey. There is no button: one lived beside the
+    /// inventory for a while and kept landing over other panels, so the hotkey is
+    /// the whole interface now.
+    /// </summary>
     [HarmonyPatch(typeof(InventoryGui), "Update")]
     internal static class InventoryGuiUpdatePatch
     {
@@ -35,8 +25,6 @@ namespace GorilaChestMod
             {
                 return;
             }
-
-            QuickStackButton.UpdateVisibility();
 
             if (!ModConfig.QuickStackHotkey.Value.IsDown() || !CanTakeHotkey())
             {

@@ -5,10 +5,9 @@ Chest quality of life for **Valheim**, in four parts:
 1. **Craft from chests.** Craft, upgrade and build using the items inside the
    chests around you, without hauling anything into your inventory first.
 2. **Oversized chest stacks.** A chest slot holds far more than the vanilla
-   limit, 100000 by default, so a chest full of wood is one slot instead of
-   twenty. Your own inventory keeps the vanilla limits.
-3. **Quick stack.** One button, or the **J** key, that pushes matching items from
-   your inventory into the chests in range. J is free in Valheim: V is auto
+   limit, 1000 by default, so a chest full of wood is one slot instead of twenty. Your own inventory keeps the vanilla limits.
+3. **Quick stack.** The **J** key pushes matching items from your inventory into
+   the chests in range. J is free in Valheim: V is auto
    pickup and G opens the hotbar radial.
 4. **Favorites.** Mark a stack with **Alt + left click** and automatic moving
    leaves it alone, both the quick stack above and the chest's own stack button.
@@ -34,7 +33,7 @@ BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
 3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
-   `GorilaChestMod 2.3.0 loaded`.
+   `GorilaChestMod 2.4.0 loaded`.
 
 With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
 `-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
@@ -70,13 +69,10 @@ can be edited with the game closed.
 | Craft from chests | `UseForBuilding` | `true` | Also pay hammer, hoe and cultivator costs from chests. |
 | Craft from chests | `IncludeVehicleContainers` | `true` | Include containers on carts and ships. |
 | Chest stacks | `Enabled` | `true` | Allow oversized stacks inside chests. |
-| Chest stacks | `ChestStackSize` | `100000` | How much one chest slot may hold. The server's value wins. |
-| Chest stacks | `ShrinkStackText` | `true` | Shrink a slot label when the numbers get long, so 100000/100000 fits. |
-| Quick stack | `Enabled` | `true` | Enable the button and the hotkey. |
+| Chest stacks | `ChestStackSize` | `1000` | How much one chest slot may hold, up to 10000. The server's value wins. |
+| Chest stacks | `ShrinkStackText` | `true` | Keep a slot label readable when the numbers get long, 1000 reads as 1k. |
+| Quick stack | `Enabled` | `true` | Enable the quick stack hotkey. |
 | Quick stack | `SkipHotbar` | `true` | Leave the hotbar row alone. |
-| Quick stack | `ShowButton` | `true` | Show the button in the inventory screen. |
-| Quick stack | `ButtonOffset` | `0, 0` | Nudge the button in canvas units from its spot beside the weight readout. |
-| Quick stack | `ButtonLabel` | `Stack to nearby chests` | Caption on the button, one word per line. |
 | Quick stack | `Hotkey` | `J` | Hotkey for quick stacking, inventory open or closed. |
 | Quick stack | `HotkeyNeedsInventory` | `false` | Require the inventory to be open for the hotkey. |
 | Favorites | `Enabled` | `true` | Allow stacks to be marked as untouchable. |
@@ -134,7 +130,11 @@ The stack limit is the plain field `ItemData.m_shared.m_maxStackSize`, read in a
 handful of places inside `Inventory` and `InventoryGrid`. A transpiler turns each
 of those field reads into a call that also receives the inventory being worked
 on, so the same item type answers 1000 in a chest and the vanilla 50 in a
-backpack. The list of methods is discovered from the game's own IL at startup
+backpack.
+
+Lowering the limit later never destroys anything: while a saved chest is being
+rebuilt, the stack coming off disk raises the ceiling for that one item, so a
+chest filled under a larger setting keeps what it holds. It simply stops growing. The list of methods is discovered from the game's own IL at startup
 rather than hard coded, and written to the log.
 
 That single change covers saving and loading too: the overload of
@@ -154,11 +154,11 @@ Three guards keep oversized stacks from leaking out of chests:
 
 ### Quick stack
 
-`InventoryGui.Awake` clones the game's own take all button, so it inherits the
-vanilla look, font and sounds, and anchors it under the weight readout, outside
-the item grid. It is shown while the inventory is open and there is a chest in
-range. The hotkey works with the inventory closed too, and holds off while a
-menu, the console, the chat or a text field has focus. Items move only into chests that already
+The hotkey is read in InventoryGui.Update and works with the inventory closed, so
+you can stand next to your chests and press it. It holds off while a menu, the
+console, the chat or a text field has focus, and while the player is dead. There
+is deliberately no button: one used to sit beside the inventory and kept landing
+in front of other panels. Items move only into chests that already
 hold that item, equipped and quest items are skipped, and the hotbar is skipped
 unless you say otherwise.
 

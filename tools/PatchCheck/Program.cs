@@ -93,7 +93,6 @@ Method("ItemDrop", "DropItem", new[] { "ItemData", "Int32", "Vector3", "Quaterni
 Field("SharedData", "m_maxStackSize");
 
 Console.WriteLine("\n--- patch targets: quick stack and networking ---");
-Method("InventoryGui", "Awake", Array.Empty<string>());
 Method("InventoryGui", "Update", Array.Empty<string>());
 Method("InventoryGui", "OnDestroy", Array.Empty<string>());
 Method("InventoryGui", "IsVisible", Array.Empty<string>());
@@ -101,7 +100,6 @@ Method("InventoryGrid", "UpdateGui", new[] { "Player", "ItemData" });
 Method("Menu", "IsVisible", Array.Empty<string>());
 Method("TextInput", "IsVisible", Array.Empty<string>());
 Method("Chat", "HasFocus", Array.Empty<string>());
-Field("InventoryGui", "m_weight");
 Field("InventoryGrid", "m_elements");
 Field("InventoryElement", "m_amount");
 Method("Inventory", "ContainsItemByName", new[] { "String" });
@@ -113,8 +111,6 @@ Method("ZNet", "Shutdown", new[] { "Boolean" });
 Method("ZNet", "IsServer", Array.Empty<string>());
 Method("ZRoutedRpc", "InvokeRoutedRPC", new[] { "String", "Object[]" });
 Method("ZRoutedRpc", "InvokeRoutedRPC", new[] { "Int64", "String", "Object[]" });
-Field("InventoryGui", "m_takeAllButton");
-Field("InventoryGui", "m_player");
 Field("InventoryGui", "m_moveItemEffects");
 
 Console.WriteLine("\n--- patch targets: favorites ---");

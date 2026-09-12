@@ -255,3 +255,45 @@ namespace GorilaChestMod
         }
     }
 }
+
+namespace GorilaChestMod
+{
+    /// <summary>
+    /// Marks the window where a saved inventory is being rebuilt from its bytes,
+    /// so a chest filled under a larger setting keeps what it holds even after the
+    /// limit is lowered. Without this the load path would trim it and the excess
+    /// would be destroyed on the next save.
+    /// </summary>
+    [HarmonyPatch]
+    internal static class InventoryLoadFloorPatch
+    {
+        private static System.Reflection.MethodBase TargetMethod()
+        {
+            foreach (System.Reflection.MethodInfo method in AccessTools.GetDeclaredMethods(typeof(Inventory)))
+            {
+                System.Reflection.ParameterInfo[] parameters = method.GetParameters();
+                if (method.Name == "AddItem" &&
+                    parameters.Length > 5 &&
+                    parameters[0].ParameterType == typeof(int) &&
+                    parameters[1].ParameterType == typeof(int))
+                {
+                    return method;
+                }
+            }
+
+            GorilaChestModPlugin.Log.LogError(
+                "The Inventory.AddItem overload that rebuilds a saved inventory was not found, chests could be trimmed after lowering the stack size.");
+            return null;
+        }
+
+        private static void Prefix(int stack)
+        {
+            ChestStacks.LoadFloor = stack;
+        }
+
+        private static void Finalizer()
+        {
+            ChestStacks.LoadFloor = 0;
+        }
+    }
+}

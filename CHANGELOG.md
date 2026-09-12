@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.4.0
+
+- **The quick stack button is gone.** It kept drawing in front of other panels,
+  and the hotkey does the same job without getting in the way. J by default,
+  changeable in the config. Its three settings, ShowButton, ButtonOffset and
+  ButtonLabel, are no longer read.
+- **Chest stacks default to 1000**, and the setting now accepts up to 10000. A
+  hundred thousand in a slot works but reads like a cheat.
+- Lowering the limit can no longer destroy anything. A chest filled under a
+  larger setting keeps what it holds when it loads, it just stops growing.
+
 ## 2.3.0
 
 - **New: favorites.** Hold Alt and left click a stack in your inventory to mark

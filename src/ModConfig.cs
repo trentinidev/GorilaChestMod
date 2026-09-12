@@ -18,10 +18,7 @@ namespace GorilaChestMod
         // ---- quick stack
         internal static ConfigEntry<bool> QuickStackEnabled;
         internal static ConfigEntry<bool> QuickStackSkipHotbar;
-        internal static ConfigEntry<bool> QuickStackButtonVisible;
-        internal static ConfigEntry<Vector2> QuickStackButtonOffset;
         internal static ConfigEntry<KeyboardShortcut> QuickStackHotkey;
-        internal static ConfigEntry<string> QuickStackButtonLabel;
         internal static ConfigEntry<bool> QuickStackHotkeyNeedsInventory;
 
         // ---- favorites
@@ -62,29 +59,20 @@ namespace GorilaChestMod
                 "The player inventory keeps the vanilla limits.");
 
             ChestStackSize = config.Bind(
-                "2 - Chest stacks", "ChestStackSize", 100000,
+                "2 - Chest stacks", "ChestStackSize", 1000,
                 new ConfigDescription(
-                    "Stack size a chest slot may hold, 100000 by default. Items whose vanilla limit is already higher keep theirs, " +
+                    "Stack size a chest slot may hold, 1000 by default. Items whose vanilla limit is already higher keep theirs, " +
                     "and items that do not stack at all, like weapons and armour, are never affected. " +
                     "On a server this value is handed to every client that connects.",
-                    new AcceptableValueRange<int>(1, 100000)));
+                    new AcceptableValueRange<int>(1, 10000)));
 
             QuickStackEnabled = config.Bind(
                 "3 - Quick stack", "Enabled", true,
-                "Enable the quick stack button and hotkey, which push matching items from your inventory into nearby chests.");
+                "Enable the quick stack hotkey, which pushes matching items from your inventory into nearby chests.");
 
             QuickStackSkipHotbar = config.Bind(
                 "3 - Quick stack", "SkipHotbar", true,
                 "Leave the hotbar row alone, so your weapons, tools and food stay where they are.");
-
-            QuickStackButtonVisible = config.Bind(
-                "3 - Quick stack", "ShowButton", true,
-                "Show the button in the inventory screen. Turn this off to use only the hotkey.");
-
-            QuickStackButtonOffset = config.Bind(
-                "3 - Quick stack", "ButtonOffset", new Vector2(0f, 0f),
-                "Nudge the button, in pixels, from its default spot under the weight readout, " +
-                "outside the inventory grid. Use this if it lands on top of something else in your resolution.");
 
             QuickStackHotkey = config.Bind(
                 "3 - Quick stack", "Hotkey", new KeyboardShortcut(KeyCode.J),
@@ -94,10 +82,6 @@ namespace GorilaChestMod
             QuickStackHotkeyNeedsInventory = config.Bind(
                 "3 - Quick stack", "HotkeyNeedsInventory", false,
                 "Require the inventory to be open before the hotkey does anything.");
-
-            QuickStackButtonLabel = config.Bind(
-                "3 - Quick stack", "ButtonLabel", "Stack to nearby chests",
-                "Caption on the button. Change it if you play in another language.");
 
             ShrinkStackText = config.Bind(
                 "2 - Chest stacks", "ShrinkStackText", true,
