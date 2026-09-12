@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.3.0
+
+- **New: favorites.** Hold Alt and left click a stack in your inventory to mark
+  it. A marked stack is left alone by quick stack and by the chest's own stack
+  button, so your food, arrows and tools stop being swept into storage. Click
+  again to unmark.
+- A small gold star sits on a marked slot, and a line in the corner confirms each
+  change. Both can be turned off, and the modifier key is configurable.
+- The mark lives in the item's own saved data, so it survives logging out,
+  moving the stack, and splitting it. Merging two stacks keeps the mark if
+  either side had it.
+
 ## 2.2.2
 
 - The button clears the open chest panel: it sits further right, and its own

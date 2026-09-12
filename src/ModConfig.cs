@@ -24,6 +24,12 @@ namespace GorilaChestMod
         internal static ConfigEntry<string> QuickStackButtonLabel;
         internal static ConfigEntry<bool> QuickStackHotkeyNeedsInventory;
 
+        // ---- favorites
+        internal static ConfigEntry<bool> FavoritesEnabled;
+        internal static ConfigEntry<KeyCode> FavoriteModifier;
+        internal static ConfigEntry<bool> FavoritesShowMarker;
+        internal static ConfigEntry<bool> FavoritesAnnounce;
+
         // ---- chest slot text
         internal static ConfigEntry<bool> ShrinkStackText;
 
@@ -97,8 +103,25 @@ namespace GorilaChestMod
                 "2 - Chest stacks", "ShrinkStackText", true,
                 "Keep the amount label on a slot readable when the numbers get long: a large limit is written as 100k, and the font shrinks from there. Turn off for the vanilla label.");
 
+            FavoritesEnabled = config.Bind(
+                "4 - Favorites", "Enabled", true,
+                "Let a stack be marked so that quick stack and the chest stack button leave it where it is.");
+
+            FavoriteModifier = config.Bind(
+                "4 - Favorites", "Modifier", KeyCode.LeftAlt,
+                "Hold this and left click a stack in your inventory to mark or unmark it. " +
+                "Left and right side keys both work. Set to None to turn marking off.");
+
+            FavoritesShowMarker = config.Bind(
+                "4 - Favorites", "ShowMarker", true,
+                "Draw a small star on a marked slot.");
+
+            FavoritesAnnounce = config.Bind(
+                "4 - Favorites", "Announce", true,
+                "Print a line in the corner when you mark or unmark a stack.");
+
             Verbose = config.Bind(
-                "4 - Debug", "Verbose", false,
+                "5 - Debug", "Verbose", false,
                 "Log every chest withdrawal, every quick stack move and every patched call to the BepInEx log.");
         }
     }

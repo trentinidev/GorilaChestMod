@@ -117,6 +117,21 @@ Field("InventoryGui", "m_takeAllButton");
 Field("InventoryGui", "m_player");
 Field("InventoryGui", "m_moveItemEffects");
 
+Console.WriteLine("\n--- patch targets: favorites ---");
+var stackAll = Method("Inventory", "StackAll", new[] { "Inventory", "Boolean" });
+Method("InventoryGui", "OnSelectedItem", new[] { "InventoryGrid", "ItemData", "Vector2i", "Modifier" });
+Method("Inventory", "GetItemAt", new[] { "Int32", "Int32" });
+Method("Inventory", "GetWidth", Array.Empty<string>());
+Method("InventoryGrid", "GetInventory", Array.Empty<string>());
+Field("ItemData", "m_customData");
+Field("InventoryElement", "m_icon");
+Field("InventoryGui", "m_dragGo");
+
+var isEquipped = Method("Humanoid", "IsItemEquiped", new[] { "ItemData" }, quiet: true);
+int equipChecks = CallsTo(stackAll, isEquipped);
+if (equipChecks < 1) Fail("Inventory.StackAll no longer asks IsItemEquiped, favorites would not be honoured by the chest stack button");
+else Console.WriteLine($"ok   Inventory.StackAll: {equipChecks} call(s) to Humanoid.IsItemEquiped");
+
 Console.WriteLine("\n--- redirected calls still present ---");
 var invCount = Method("Inventory", "CountItems", new[] { "String", "Int32", "Boolean" }, quiet: true);
 var invHave = Method("Inventory", "HaveItem", new[] { "String", "Boolean" }, quiet: true);

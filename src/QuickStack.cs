@@ -121,6 +121,12 @@ namespace GorilaChestMod
                 return false;
             }
 
+            // A stack you marked stays where you put it.
+            if (Favorites.IsFavorite(item))
+            {
+                return false;
+            }
+
             // Quest items are bound to the player, they have no business in a chest.
             if (item.m_shared.m_questItem)
             {

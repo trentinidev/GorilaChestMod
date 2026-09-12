@@ -1,6 +1,6 @@
 # GorilaChestMod
 
-Chest quality of life for **Valheim**, in three parts:
+Chest quality of life for **Valheim**, in four parts:
 
 1. **Craft from chests.** Craft, upgrade and build using the items inside the
    chests around you, without hauling anything into your inventory first.
@@ -10,6 +10,8 @@ Chest quality of life for **Valheim**, in three parts:
 3. **Quick stack.** One button, or the **J** key, that pushes matching items from
    your inventory into the chests in range. J is free in Valheim: V is auto
    pickup and G opens the hotbar radial.
+4. **Favorites.** Mark a stack with **Alt + left click** and automatic moving
+   leaves it alone, both the quick stack above and the chest's own stack button.
 
 Runs on the client and on a dedicated server.
 
@@ -32,7 +34,7 @@ BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
 3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
-   `GorilaChestMod 2.2.2 loaded`.
+   `GorilaChestMod 2.3.0 loaded`.
 
 With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
 `-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
@@ -77,6 +79,10 @@ can be edited with the game closed.
 | Quick stack | `ButtonLabel` | `Stack to nearby chests` | Caption on the button, one word per line. |
 | Quick stack | `Hotkey` | `J` | Hotkey for quick stacking, inventory open or closed. |
 | Quick stack | `HotkeyNeedsInventory` | `false` | Require the inventory to be open for the hotkey. |
+| Favorites | `Enabled` | `true` | Allow stacks to be marked as untouchable. |
+| Favorites | `Modifier` | `LeftAlt` | Hold this and left click a stack to mark it. Either side key works. |
+| Favorites | `ShowMarker` | `true` | Draw a star on a marked slot. |
+| Favorites | `Announce` | `true` | Print a line when you mark or unmark a stack. |
 | Debug | `Verbose` | `false` | Log every withdrawal, move and patched call. |
 
 When you are connected to a server that has the mod, that server's
@@ -155,6 +161,25 @@ range. The hotkey works with the inventory closed too, and holds off while a
 menu, the console, the chat or a text field has focus. Items move only into chests that already
 hold that item, equipped and quest items are skipped, and the hotbar is skipped
 unless you say otherwise.
+
+### Favorites
+
+The mark is a single entry in the item's own custom data, the dictionary the
+game already serialises next to durability and quality. That buys three things
+without any bookkeeping: it is saved and loaded with the item, `ItemData.Clone`
+copies it so splitting a stack keeps both halves marked, and it travels with the
+stack when you move it by hand. Merging is the one case the game would drop, so
+the slot targeted `Inventory.AddItem` carries the mark over when either side had
+it.
+
+The click is caught in `InventoryGui.OnSelectedItem`: with the modifier held the
+click toggles the mark and is swallowed, otherwise vanilla runs untouched. The
+star is painted into a texture once at startup, since the game UI has no star to
+borrow, and the same sprite is reused for every slot.
+
+The chest's own stack button is honoured too. It already refuses to move what
+you have equipped, through `Humanoid.IsItemEquiped`, so a transpiler points that
+call at a check that also answers yes for a marked stack.
 
 ### Server side
 
