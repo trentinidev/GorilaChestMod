@@ -4,7 +4,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>GorilaChestMod</AssemblyName>
     <RootNamespace>GorilaChestMod</RootNamespace>
-    <Version>2.4.2</Version>
+    <Version>2.5.0</Version>
     <LangVersion>latest</LangVersion>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>

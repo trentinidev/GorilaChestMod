@@ -2,7 +2,7 @@
   "name": "GorilaChestMod",
   "version_number": "{{VERSION}}",
   "website_url": "https://github.com/trentinidev/GorilaChestMod",
-  "description": "Craft and build from nearby chests, oversized stacks inside chests, a quick stack hotkey, and Alt click favorites that automatic moving never touches.",
+  "description": "Craft and build from nearby chests, oversized chest stacks, a quick stack hotkey, Alt click favorites, and a Deconstruct tab that gives a crafted item's materials back.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.2350"
   ]

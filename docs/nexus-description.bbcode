@@ -1,6 +1,6 @@
 [size=5]GorilaChestMod[/size]
 
-Chest quality of life for Valheim, in three parts.
+Chest quality of life for Valheim, in five parts.
 
 [size=4]1. Craft from chests[/size]
 Craft, upgrade and build using the items inside the chests around you, without hauling anything into your inventory first. The recipe list, the have/need numbers and the craft button all count what is in range. Hammer, hoe and cultivator costs are covered too, and that part can be turned off.
@@ -12,13 +12,28 @@ A chest slot holds far more than the vanilla limit, 1000 by default and configur
 The J key pushes matching items from your inventory into the chests in range, with the inventory open or closed. J is free in Valheim: V is auto pickup and G opens the hotbar radial. The key can be changed or cleared in the config. An item only moves into a chest that already holds that item, so your sorting survives. The hotbar is left alone by default.
 
 [size=4]4. Favorites[/size]
-Hold Alt and left click a stack in your inventory to mark it. A marked stack carries a small gold star and is left where it is by the quick stack above and by the chest's own stack button, so food, arrows and tools stop being swept into storage. Click again to unmark. The mark is stored with the item itself, so it survives logging out, moving the stack and splitting it. The modifier key, the star and the confirmation message are all configurable.
+Hold Alt and left click a stack in your inventory to mark it. A marked stack carries a small gold star and is left where it is by the quick stack above, by the chest's own stack button and by the Deconstruct tab below, so food, arrows and tools stop being swept into storage. Click again to unmark. The mark is stored with the item itself, so it survives logging out, moving the stack and splitting it.
+
+[size=4]5. Deconstruct (new in 2.5.0)[/size]
+A third tab beside Craft and Upgrade at every crafting station. Crafted a helmet you no longer want? Pick the Deconstruct tab, select it in the list, press the button, and after the usual progress bar the helmet is gone and its materials are back in your inventory, including everything you spent upgrading it.
+
+[list]
+[*]The tab is a copy of the game's own Upgrade tab, so the font, size and sound are the vanilla ones.
+[*]The panel shows exactly which materials, and how many, you get back before you press anything.
+[*]Return rate from 50% to 100%, 100% by default, and a server with the mod decides it for everyone on it.
+[*]Only at the station the recipe belongs to: forge items at the forge, workbench items at the workbench.
+[*]Equipped items, favorites and incomplete batches are greyed out with the reason. Arrows come in 20, so deconstructing takes 20 and returns the cost of one craft.
+[*]Meads and feasts, which accept one ingredient out of several, are left out: there is no telling which one went in.
+[*]Durability does not matter, since repairing is free in Valheim anyway.
+[/list]
+
+[b]This was a separate mod, GorilaDeconstruct. From 2.5.0 it is part of GorilaChestMod, so remove GorilaDeconstruct before updating, otherwise the tab is built twice.[/b]
 
 [size=4]Which chests count[/size]
 A chest is only used if it passes the same rules the game applies when you try to open it: inside the configured radius, public or created by you, guard stone access when the chest checks for one, and nobody else has it open right now.
 
 [size=4]Multiplayer and dedicated servers[/size]
-Install it on every player's game, and on the dedicated server as well. The server needs it because a server that loads a chest decides how large its stacks may be, and a vanilla server would clamp an oversized stack back down and destroy the excess. The server also hands its chest stack settings to every client that connects, so the session agrees on one limit. Craft from chests and quick stack are decided on the player's own machine and work against a vanilla server too.
+Install it on every player's game, and on the dedicated server as well. The server needs it because a server that loads a chest decides how large its stacks may be, and a vanilla server would clamp an oversized stack back down and destroy the excess. The server also hands its chest stack size and its deconstruct return rate to every client that connects, so the whole session agrees on them, and those values are only held in memory: joining a server never rewrites a player's own config file. Craft from chests, quick stack and deconstruct are decided on the player's own machine and work against a vanilla server too.
 
 [size=4]Requirements[/size]
 [list]
@@ -36,7 +51,7 @@ Install it on every player's game, and on the dedicated server as well. The serv
 With r2modman or Thunderstore Mod Manager, use Import local mod and pick the Thunderstore flavoured zip instead.
 
 [size=4]Configuration[/size]
-Edit BepInEx\config\dev.trentini.gorilachestmod.cfg with the game closed. Range, chest stack size, the quick stack hotkey which defaults to J, and the favorite settings are all in there.
+Edit BepInEx\config\dev.trentini.gorilachestmod.cfg with the game closed. Range, chest stack size, the quick stack hotkey which defaults to J, the favorite settings and the deconstruct return rate are all in there.
 
 [size=4]Before you uninstall[/size]
 Vanilla trims a stack back to its normal limit when it loads a chest, and the excess is gone. Empty your chests, or lower the stack size and let the chests settle, before removing the mod.

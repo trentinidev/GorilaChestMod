@@ -8,6 +8,8 @@ namespace GorilaChestMod
         private static void Postfix()
         {
             StackText.Forget();
+            DeconstructTab.Destroy();
+            DeconstructPanel.ClearPending();
         }
     }
 

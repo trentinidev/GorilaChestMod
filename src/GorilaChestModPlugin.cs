@@ -34,14 +34,23 @@ namespace GorilaChestMod
             Log = Logger;
             ModConfig.Bind(Config);
 
+            // Only the Deconstruct tab needs these, and it is the one feature that
+            // reaches into private parts of the crafting panel. If the panel moved
+            // in a game update, that tab stays off and the rest carries on.
+            if (!GuiAccess.Resolve())
+            {
+                Log.LogError("The crafting panel changed in this game version, the Deconstruct tab stays off.");
+            }
+
             _harmony = new Harmony(PluginGuid);
             _harmony.PatchAll(typeof(GorilaChestModPlugin).Assembly);
 
             Log.LogInfo(
                 $"{PluginName} {PluginVersion} loaded. " +
                 $"Craft range {ModConfig.Range.Value}m, building {ModConfig.UseForBuilding.Value}, " +
-                $"chest stacks {StackSettings.Describe()}, " +
-                $"quick stack {ModConfig.QuickStackEnabled.Value}.");
+                $"chest stacks {StackSettings.DescribeStacks()}, " +
+                $"quick stack {ModConfig.QuickStackEnabled.Value}, " +
+                $"deconstruct {DeconstructSettings.Describe()}.");
         }
 
         private void OnDestroy()

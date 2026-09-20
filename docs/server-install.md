@@ -4,11 +4,11 @@ This page is for whoever runs the server. Hand them this file and the release zi
 
 ## Why the server needs the mod at all
 
-Two of the three features are decided entirely on a player's own machine, so they
-work against a vanilla server: crafting from nearby chests, and the quick stack
-button.
+Four of the five features are decided entirely on a player's own machine, so they
+work against a vanilla server: crafting from nearby chests, the quick stack
+hotkey, favorites and the Deconstruct tab.
 
-The third one does not. A chest inventory is stored inside its ZDO, and whoever
+Oversized chest stacks do not. A chest inventory is stored inside its ZDO, and whoever
 holds that chest in memory decides how large its stacks may be. A vanilla server
 loading a chest that contains an oversized stack clamps it back to the normal
 limit and destroys the excess the next time it writes that chest out. That is why
@@ -67,7 +67,7 @@ root on game updates, so check the mod is still there after one.
 The first boot writes `BepInEx/config/dev.trentini.gorilachestmod.cfg`. Stop the
 server, edit it, start it again.
 
-Only these two are pushed to clients, and only for as long as they are connected.
+Only these three are pushed to clients, and only for as long as they are connected.
 Since 2.4.1 the client keeps them in memory, so joining your server no longer
 changes the settings saved on a player's own machine:
 
@@ -75,6 +75,7 @@ changes the settings saved on a player's own machine:
 | --- | --- | --- |
 | `2 - Chest stacks` | `Enabled` | Whether oversized chest stacks exist at all on this server. |
 | `2 - Chest stacks` | `ChestStackSize` | How much one chest slot may hold, 1000 by default. |
+| `5 - Deconstruct` | `ReturnPercent` | How much of an item's materials a deconstruction gives back, 50 to 100. |
 
 Everything else in that file only affects a machine where somebody is actually
 playing, so on a headless server it does nothing.
@@ -84,7 +85,7 @@ playing, so on a headless server it does nothing.
 In `BepInEx/LogOutput.log` on the server:
 
 - `GorilaChestMod <version> loaded` right after the chainloader lines.
-- `Sent chest stack settings to peer <id>` each time a player joins.
+- `Sent settings to peer <id>` each time a player joins.
 
 On a player's machine, the log answers with the value the server sent.
 

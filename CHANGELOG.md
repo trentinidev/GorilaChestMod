@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.5.0
+
+- **New: the Deconstruct tab.** A third tab beside Craft and Upgrade at every
+  crafting station takes a crafted item apart and gives its materials back,
+  including everything spent upgrading it. `ReturnPercent` sets how much comes
+  back, from 50 to 100, and a server with the mod decides it for everyone.
+- **This used to be a separate mod, GorilaDeconstruct.** It is now part of
+  GorilaChestMod and is no longer updated on its own. **Remove GorilaDeconstruct
+  before updating**, or the tab is built twice.
+- Favorites are honoured there too: a marked stack is refused, like everywhere
+  else the mod moves items for you.
+
 ## 2.4.2
 
 - Documentation only, the mod itself is unchanged from 2.4.1. The readme no

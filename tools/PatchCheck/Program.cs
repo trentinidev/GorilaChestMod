@@ -61,6 +61,14 @@ void Field(string typeName, string fieldName)
     else Fail($"field {typeName}.{fieldName} not found");
 }
 
+void Property(string typeName, string propertyName)
+{
+    var t = Type(typeName);
+    if (t == null) return;
+    if (t.Properties.Any(p => p.Name == propertyName)) Console.WriteLine($"ok   property {typeName}.{propertyName}");
+    else Fail($"property {typeName}.{propertyName} not found");
+}
+
 int CallsTo(MethodDefinition method, MethodDefinition target) =>
     method?.Body == null || target == null
         ? 0
@@ -143,6 +151,65 @@ Method("ItemData", "Clone", Array.Empty<string>());
 // The oversized move stands in for this call, so it has to still be the one
 // DropItem uses to hand a stack over.
 ExpectCalls("InventoryGrid.DropItem", gridDropItem, moveItemToThis, 1);
+
+Console.WriteLine("\n--- patch targets: deconstruct tab ---");
+var updatePanel = Method("InventoryGui", "UpdateCraftingPanel", new[] { "Boolean" });
+var updateList = Method("InventoryGui", "UpdateRecipeList", new[] { "List`1" });
+var updateRecipe = Method("InventoryGui", "UpdateRecipe", new[] { "Player", "Single" });
+Method("InventoryGui", "OnCraftPressed", Array.Empty<string>());
+Method("InventoryGui", "OnTabCraftPressed", Array.Empty<string>());
+Method("InventoryGui", "OnTabUpgradePressed", Array.Empty<string>());
+Method("InventoryGui", "Awake", Array.Empty<string>());
+
+Console.WriteLine("\n--- deconstruct members reached through reflection ---");
+Type("RecipeDataPair");
+Property("RecipeDataPair", "Recipe");
+Property("RecipeDataPair", "ItemData");
+Property("RecipeDataPair", "InterfaceElement");
+Field("InventoryGui", "m_availableRecipes");
+Field("InventoryGui", "m_selectedRecipe");
+Field("InventoryGui", "m_craftTimer");
+Field("InventoryGui", "m_craftRecipe");
+Field("InventoryGui", "m_multiCrafting");
+Field("InventoryGui", "m_recipeListBaseSize");
+Method("InventoryGui", "AddRecipeToList", new[] { "Player", "Recipe", "ItemData", "Boolean" });
+Method("InventoryGui", "SetActiveGroup", new[] { "Int32", "Boolean" });
+
+Console.WriteLine("\n--- deconstruct members the mod compiles against ---");
+foreach (var f in new[]
+         {
+             "m_tabCraft", "m_tabUpgrade", "m_uiGroups", "m_recipeListRoot", "m_recipeListSpace",
+             "m_recipeName", "m_recipeDecription", "m_itemCraftType", "m_variantButton",
+             "m_minStationLevelIcon", "m_craftButton", "m_recipeRequirementList",
+             "CraftingVibration", "m_craftItemEffects", "m_craftItemDoneEffects",
+         })
+{
+    Field("InventoryGui", f);
+}
+Method("InventoryGui", "HideRequirement", new[] { "Transform" });
+Field("CraftingStation", "m_hasCraftTab");
+Field("CraftingStation", "m_upgrader");
+Field("CraftingStation", "m_craftItemEffects");
+Field("CraftingStation", "m_craftItemDoneEffects");
+Field("Piece/Requirement", "m_upgraderResource");
+Field("Piece/Requirement", "m_recover");
+Method("Piece/Requirement", "GetAmount", new[] { "Int32" });
+Field("Recipe", "m_requireOnlyOneIngredient");
+Method("ObjectDB", "GetRecipe", new[] { "ItemData" });
+Method("Player", "RequiredCraftingStation", new[] { "Recipe", "Int32", "Boolean" });
+Method("Player", "GetCurrentCraftingStation", Array.Empty<string>());
+Method("Character", "ShowPickupMessage", new[] { "ItemData", "Int32" });
+Method("ItemData", "GetTooltip", new[] { "ItemData", "Int32", "Boolean", "Single", "Int32", "Boolean" });
+Field("UIGamePad", "m_hint");
+
+// The tab rides on this chain: the panel builds its list through UpdateRecipeList,
+// and the craft timer in UpdateRecipe ends in DoCrafting.
+ExpectCalls("UpdateCraftingPanel", updatePanel, updateList, 1);
+ExpectCalls("UpdateRecipe", updateRecipe, doCrafting, 1);
+var inCraftTab = Method("InventoryGui", "InCraftTab", Array.Empty<string>(), quiet: true);
+ExpectCalls("UpdateRecipeList", updateList, inCraftTab, 1);
+var tabUpgradePressed = Method("InventoryGui", "OnTabUpgradePressed", Array.Empty<string>(), quiet: true);
+ExpectCalls("OnTabUpgradePressed", tabUpgradePressed, updatePanel, 1);
 
 Console.WriteLine("\n--- redirected calls still present ---");
 var invCount = Method("Inventory", "CountItems", new[] { "String", "Int32", "Boolean" }, quiet: true);

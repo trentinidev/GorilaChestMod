@@ -1,6 +1,6 @@
 # GorilaChestMod
 
-Chest quality of life for **Valheim**, in four parts:
+Chest quality of life for **Valheim**, in five parts:
 
 1. **Craft from chests.** Craft, upgrade and build using the items inside the
    chests around you, without hauling anything into your inventory first.
@@ -11,8 +11,14 @@ Chest quality of life for **Valheim**, in four parts:
    pickup and G opens the hotbar radial.
 4. **Favorites.** Mark a stack with **Alt + left click** and automatic moving
    leaves it alone, both the quick stack above and the chest's own stack button.
+5. **Deconstruct.** A third tab beside Craft and Upgrade takes a crafted item
+   apart and gives its materials back, **upgrades included**.
 
 Runs on the client and on a dedicated server.
+
+The Deconstruct tab used to be a separate mod, GorilaDeconstruct. From 2.5.0 it
+lives here, so **remove GorilaDeconstruct before updating**, otherwise the tab is
+built twice.
 
 ## Game version this was built against
 
@@ -33,7 +39,7 @@ BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
 3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
-   `GorilaChestMod 2.4.2 loaded`.
+   `GorilaChestMod 2.5.0 loaded`.
 
 With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
 `-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
@@ -79,13 +85,16 @@ can be edited with the game closed.
 | Favorites | `Modifier` | `LeftAlt` | Hold this and left click a stack to mark it. Either side key works. |
 | Favorites | `ShowMarker` | `true` | Draw a star on a marked slot. |
 | Favorites | `Announce` | `true` | Print a line when you mark or unmark a stack. |
-| Debug | `Verbose` | `false` | Log every withdrawal, move and patched call. |
+| Deconstruct | `Enabled` | `true` | Show the Deconstruct tab at crafting stations. |
+| Deconstruct | `ReturnPercent` | `100` | How much of the materials comes back, 50 to 100. The server's value wins. |
+| Deconstruct | `RespectFavorites` | `true` | Refuse to deconstruct a stack you marked as favorite. |
+| Debug | `Verbose` | `false` | Log every withdrawal, move, deconstruction and patched call. |
 
 When you are connected to a server that has the mod, that server's
-`Enabled` and `ChestStackSize` under Chest stacks replace your local values for
-as long as you are connected. Those values are held in memory only: your config
-file is never rewritten, so leaving the server gives you your own settings back.
-Everything else stays personal.
+`Enabled` and `ChestStackSize` under Chest stacks, and `ReturnPercent` under
+Deconstruct, replace your local values for as long as you are connected. Those
+values are held in memory only: your config file is never rewritten, so leaving
+the server gives you your own settings back. Everything else stays personal.
 
 ## Which chests count
 
@@ -195,6 +204,36 @@ The chest's own stack button is honoured too. It already refuses to move what
 you have equipped, through `Humanoid.IsItemEquiped`, so a transpiler points that
 call at a check that also answers yes for a marked stack.
 
+### Deconstruct
+
+Pick the **Deconstruct** tab at a crafting station, choose a crafted item from
+the list, press the button, and after the usual progress bar the item is gone and
+its materials are in your inventory.
+
+The cost is read from the item's own recipe, the same way the game charges for
+it: level 1 costs `Requirement.GetAmount(1)`, each upgrade to level n costs
+`Requirement.GetAmount(n)`. Every level up to the item's own is added, then
+`ReturnPercent` is applied and each material is rounded down on its own. A level
+3 item whose recipe asks for 5 of a material with 3 more per level cost
+5 + 3 + 6 = 14 of it, so it gives back 14 at 100% and 7 at 50%.
+
+An item is listed when its recipe belongs to the station you are using, the same
+rule the Craft tab follows, and it is greyed out with the reason in the panel
+when it is equipped, marked as favorite, or part of a batch you do not have in
+full: arrows come in 20, so deconstructing takes 20 and returns the cost of one
+craft. Meads and feasts, which accept one ingredient out of several, are left
+out entirely, since there is no telling which one went in. Materials that do not
+fit in your inventory are dropped at your feet.
+
+The tab itself is a copy of the game's own Upgrade tab, so the font, size and
+sound are the vanilla ones, and the list, the detail panel and the progress bar
+are the game's. The vanilla tabs mark the selected one by making it non
+interactable, and this one follows that convention, so `InCraftTab` and
+`InUpradeTab` both answer false while it is open and nothing else in the game
+mistakes the list for a recipe list. The parts of the crafting panel it reads are
+private, so they are resolved once at startup: if a game update moves them, the
+tab stays off with a line in the log and the other four features carry on.
+
 ### Server side
 
 The plugin loads in `valheim_server.exe` as well as `valheim.exe`. On a server
@@ -229,7 +268,16 @@ before launching the game.
   your chests, or lower `ChestStackSize` and let the chests settle, before you
   uninstall. The same applies to a player without the mod opening a chest that
   holds oversized stacks.
-- Repairing costs no materials in Valheim, so there is nothing to do there.
+- Repairing costs no materials in Valheim, so there is nothing to do there, and
+  a worn item deconstructs for the same materials as a new one.
+- **Deconstructing a batch can turn a profit at 100%.** A high crafting skill
+  sometimes adds bonus items to a stackable craft, arrows for instance, and a
+  deconstruction gives back the cost of one batch. Lower `ReturnPercent` if that
+  matters on your server.
+- An item with more than one recipe is priced by the first recipe the game lists.
+- The Deconstruct tab has no gamepad shortcut of its own, and its caption is
+  English in every language. Once it is open, the list and the button work with
+  the gamepad.
 - Smelters, kilns and other stations that take ore or wood through direct
   interaction are not fed from chests. Crafting, upgrading and building are.
 - The quick stack button is mouse driven, there is no gamepad binding for it yet.

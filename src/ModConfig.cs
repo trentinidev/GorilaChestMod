@@ -30,6 +30,11 @@ namespace GorilaChestMod
         // ---- chest slot text
         internal static ConfigEntry<bool> ShrinkStackText;
 
+        // ---- deconstruct
+        internal static ConfigEntry<bool> DeconstructEnabled;
+        internal static ConfigEntry<int> ReturnPercent;
+        internal static ConfigEntry<bool> DeconstructRespectFavorites;
+
         // ---- misc
         internal static ConfigEntry<bool> Verbose;
 
@@ -104,9 +109,24 @@ namespace GorilaChestMod
                 "4 - Favorites", "Announce", true,
                 "Print a line in the corner when you mark or unmark a stack.");
 
+            DeconstructEnabled = config.Bind(
+                "5 - Deconstruct", "Enabled", true,
+                "Add a Deconstruct tab beside Craft and Upgrade at crafting stations, which takes a crafted item apart and gives its materials back.");
+
+            ReturnPercent = config.Bind(
+                "5 - Deconstruct", "ReturnPercent", 100,
+                new ConfigDescription(
+                    "How much of the materials a deconstruction gives back, from 50 to 100. Each material is rounded down on its own, " +
+                    "so at 50% an item that cost 3 wood gives 1 back. On a server this value is handed to every client that connects.",
+                    new AcceptableValueRange<int>(DeconstructSettings.MinPercent, DeconstructSettings.MaxPercent)));
+
+            DeconstructRespectFavorites = config.Bind(
+                "5 - Deconstruct", "RespectFavorites", true,
+                "Refuse to deconstruct a stack you marked as favorite.");
+
             Verbose = config.Bind(
-                "5 - Debug", "Verbose", false,
-                "Log every chest withdrawal, every quick stack move and every patched call to the BepInEx log.");
+                "6 - Debug", "Verbose", false,
+                "Log every chest withdrawal, every quick stack move, every deconstruction and every patched call to the BepInEx log.");
         }
     }
 }

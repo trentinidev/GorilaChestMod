@@ -5,8 +5,8 @@ without building the project or opening the releases page.
 
 | File | Use it for |
 | --- | --- |
-| `GorilaChestMod-2.4.2-thunderstore.zip` | Thunderstore upload, and `Import local mod` in r2modman or Thunderstore Mod Manager. The dll sits at the root. |
-| `GorilaChestMod-2.4.2-nexus.zip` | **Dedicated server and manual installs.** It already has the `BepInEx/plugins/GorilaChestMod/` layout, so it extracts straight over the game or server folder. |
+| `GorilaChestMod-2.5.0-thunderstore.zip` | Thunderstore upload, and `Import local mod` in r2modman or Thunderstore Mod Manager. The dll sits at the root. |
+| `GorilaChestMod-2.5.0-nexus.zip` | **Dedicated server and manual installs.** It already has the `BepInEx/plugins/GorilaChestMod/` layout, so it extracts straight over the game or server folder. |
 
 Both hold the same dll, only the folder layout differs.
 

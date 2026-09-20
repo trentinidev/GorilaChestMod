@@ -30,6 +30,9 @@ namespace GorilaChestMod
 
         internal static int ServerStackSize { get; private set; }
 
+        /// <summary>The server's deconstruct return rate, or null when it did not send one.</summary>
+        internal static int? ServerReturnPercent { get; private set; }
+
         internal static void Register()
         {
             if (_registered || ZRoutedRpc.instance == null)
@@ -48,6 +51,7 @@ namespace GorilaChestMod
             ServerEnforced = false;
             ServerStacksEnabled = false;
             ServerStackSize = 0;
+            ServerReturnPercent = null;
         }
 
         /// <summary>Called on a client once it is connected, asks the server for its settings.</summary>
@@ -77,10 +81,15 @@ namespace GorilaChestMod
             package.Write(ModConfig.ChestStacksEnabled.Value);
             package.Write(ModConfig.ChestStackSize.Value);
 
+            // Added in 2.5.0. An older client stops reading before this and keeps
+            // its own return rate, which is why it goes last.
+            package.Write(ModConfig.ReturnPercent.Value);
+
             ZRoutedRpc.instance.InvokeRoutedRPC(sender, ConfigRpc, package);
 
             GorilaChestModPlugin.Log.LogInfo(
-                $"Sent chest stack settings to peer {sender}: enabled {ModConfig.ChestStacksEnabled.Value}, size {ModConfig.ChestStackSize.Value}.");
+                $"Sent settings to peer {sender}: chest stacks enabled {ModConfig.ChestStacksEnabled.Value}, " +
+                $"size {ModConfig.ChestStackSize.Value}, deconstruct returns {ModConfig.ReturnPercent.Value}%.");
         }
 
         private static void OnConfigReceived(long sender, ZPackage package)
@@ -95,9 +104,13 @@ namespace GorilaChestMod
             ServerStackSize = package.ReadInt();
             ServerEnforced = true;
 
+            // A server still on 2.4.x sends nothing past the stack size.
+            ServerReturnPercent = package.GetPos() < package.Size() ? package.ReadInt() : (int?)null;
+
             GorilaChestModPlugin.Log.LogInfo(
-                $"Server set chest stacks to enabled {ServerStacksEnabled}, size {ServerStackSize}. " +
-                "Your local values for those two are ignored while connected, and your config file is left untouched.");
+                $"Server set chest stacks to enabled {ServerStacksEnabled}, size {ServerStackSize}, " +
+                $"deconstruct returns {(ServerReturnPercent.HasValue ? ServerReturnPercent + "%" : "not sent, keeping yours")}. " +
+                "Your local values for those are ignored while connected, and your config file is left untouched.");
         }
     }
 
@@ -118,10 +131,41 @@ namespace GorilaChestMod
                 : ModConfig.ChestStackSize != null ? ModConfig.ChestStackSize.Value : 1;
 
         /// <summary>What to print in a log line or a report.</summary>
-        internal static string Describe()
+        internal static string DescribeStacks()
         {
             string where = ConfigSync.ServerEnforced ? " (from the server)" : "";
             return Enabled ? StackSize + where : "off" + where;
+        }
+    }
+
+    /// <summary>
+    /// The deconstruct return rate in force right now, the server's while
+    /// connected to one that sends it, the player's own otherwise.
+    /// </summary>
+    internal static class DeconstructSettings
+    {
+        internal const int MinPercent = 50;
+        internal const int MaxPercent = 100;
+
+        internal static int Percent
+        {
+            get
+            {
+                int value = ConfigSync.ServerReturnPercent
+                            ?? (ModConfig.ReturnPercent != null ? ModConfig.ReturnPercent.Value : MaxPercent);
+
+                return value < MinPercent ? MinPercent : value > MaxPercent ? MaxPercent : value;
+            }
+        }
+
+        internal static string Describe()
+        {
+            if (!ModConfig.DeconstructEnabled.Value)
+            {
+                return "off";
+            }
+
+            return Percent + "%" + (ConfigSync.ServerReturnPercent.HasValue ? " (from the server)" : "");
         }
     }
 
