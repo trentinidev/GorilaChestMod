@@ -207,53 +207,6 @@ server never takes those values from a client. On the client those values live
 in memory for the length of the session, so a visit to a server never changes
 what is written in the player's own config file.
 
-## Build
-
-```
-dotnet build -c Release
-```
-
-If Valheim lives somewhere else:
-
-```
-dotnet build -c Release -p:ValheimDir="D:\Steam\steamapps\common\Valheim"
-```
-
-Game references come straight from `valheim_Data/Managed`, and BepInEx plus
-Harmony come from the BepInEx NuGet feed, already configured in `nuget.config`.
-The build copies the dll into the r2modman profile when that folder exists, and
-otherwise into the game's own plugins folder.
-
-## Packaging and publishing
-
-```
-powershell -ExecutionPolicy Bypass -File packaging\build-package.ps1
-```
-
-Writes both release zips into `dist/`:
-
-| Zip | Contents | Where it goes |
-| --- | --- | --- |
-| `-thunderstore.zip` | `manifest.json`, `icon.png`, readme, changelog and the dll at the root | Thunderstore, or `Import local mod` in r2modman |
-| `-nexus.zip` | `BepInEx/plugins/GorilaChestMod/GorilaChestMod.dll` plus readme and changelog | Nexus Mods, extracted over the game folder |
-
-The script validates what usually gets an upload rejected: an `x.y.z` version, an
-icon that is exactly 256 by 256, a manifest name made only of letters, digits and
-underscores, and a description within the 250 character limit. It also checks
-that the compiled dll carries the same version as the csproj.
-
-The version lives **only** in `<Version>` in `GorilaChestMod.csproj`. The
-`GenerateBuildInfo` target turns it into the constant the `BepInPlugin` attribute
-uses, and the packaging script reads the same property for `manifest.json`.
-
-The icon comes from `packaging/make-icon.ps1`, which lays the mod name and the
-author over `packaging/icon-source.png`. Replace the source art or edit the
-bands and re-run it. `packaging/make-icon-badge.ps1` draws the older gorilla
-roundel entirely in code, if you want a mark rather than a scene.
-`docs/nexus-description.bbcode` holds the Nexus page description, ready to paste.
-`docs/thunderstore-publish.md` covers the Thunderstore upload: which file, which
-team, which categories, and the checks the site runs.
-
 ## Compatibility check after a game update
 
 `tools/PatchCheck` opens `assembly_valheim.dll` with Mono.Cecil and asserts that

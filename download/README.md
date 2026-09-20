@@ -23,6 +23,3 @@ version. Step by step, Windows, Linux and rented panels:
 
 r2modman cannot deploy to a remote server. It manages a local profile folder, so
 files still have to be uploaded to the server by FTP, SSH or the host's panel.
-
-`packaging/build-package.ps1` writes every build into `dist/`, which stays out of
-the repository. The files above are refreshed when a version ships.
