@@ -67,7 +67,9 @@ root on game updates, so check the mod is still there after one.
 The first boot writes `BepInEx/config/dev.trentini.gorilachestmod.cfg`. Stop the
 server, edit it, start it again.
 
-Only these two are pushed to clients:
+Only these two are pushed to clients, and only for as long as they are connected.
+Since 2.4.1 the client keeps them in memory, so joining your server no longer
+changes the settings saved on a player's own machine:
 
 | Section | Option | Meaning |
 | --- | --- | --- |

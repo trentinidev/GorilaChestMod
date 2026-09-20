@@ -40,7 +40,7 @@ namespace GorilaChestMod
             Log.LogInfo(
                 $"{PluginName} {PluginVersion} loaded. " +
                 $"Craft range {ModConfig.Range.Value}m, building {ModConfig.UseForBuilding.Value}, " +
-                $"chest stacks {(ModConfig.ChestStacksEnabled.Value ? ModConfig.ChestStackSize.Value.ToString() : "off")}, " +
+                $"chest stacks {StackSettings.Describe()}, " +
                 $"quick stack {ModConfig.QuickStackEnabled.Value}.");
         }
 

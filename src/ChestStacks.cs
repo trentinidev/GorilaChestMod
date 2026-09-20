@@ -42,7 +42,7 @@ namespace GorilaChestMod
                 return vanilla;
             }
 
-            if (ModConfig.ChestStacksEnabled == null || !ModConfig.ChestStacksEnabled.Value)
+            if (!StackSettings.Enabled)
             {
                 return vanilla;
             }
@@ -52,7 +52,73 @@ namespace GorilaChestMod
                 return vanilla;
             }
 
-            return Mathf.Max(vanilla, Mathf.Max(ModConfig.ChestStackSize.Value, LoadFloor));
+            return Mathf.Max(vanilla, Mathf.Max(StackSettings.StackSize, LoadFloor));
+        }
+
+        /// <summary>The limit that applies to an item where it is sitting right now, chest or backpack.</summary>
+        internal static int MaxStackForItem(ItemDrop.ItemData.SharedData shared, ItemDrop.ItemData item)
+        {
+            return MaxStackFor(shared, InventoryOf(item));
+        }
+
+        /// <summary>
+        /// Which open inventory holds this item: the container on screen, or the
+        /// player's own. Null when it is neither, which leaves the vanilla limit
+        /// in place.
+        /// </summary>
+        internal static Inventory InventoryOf(ItemDrop.ItemData item)
+        {
+            if (item == null)
+            {
+                return null;
+            }
+
+            InventoryGui gui = InventoryGui.instance;
+            if (gui != null && gui.ContainerGrid != null)
+            {
+                Inventory container = gui.ContainerGrid.GetInventory();
+                if (container != null && container.ContainsItem(item))
+                {
+                    return container;
+                }
+            }
+
+            Player player = Player.m_localPlayer;
+            if (player != null)
+            {
+                Inventory backpack = player.GetInventory();
+                if (backpack != null && backpack.ContainsItem(item))
+                {
+                    return backpack;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Inventory.Changed is private, and it is what saves a chest back into
+        /// its ZDO through Container.OnContainerChanged. Taking items straight out
+        /// of a stack has to announce itself, otherwise the chest is written out
+        /// still holding what was removed and the items come back.
+        /// </summary>
+        private static readonly System.Reflection.MethodInfo ChangedMethod =
+            HarmonyLib.AccessTools.Method(typeof(Inventory), "Changed", new[] { typeof(bool), typeof(bool) });
+
+        internal static void NotifyChanged(Inventory inventory)
+        {
+            if (inventory == null)
+            {
+                return;
+            }
+
+            if (ChangedMethod == null)
+            {
+                GorilaChestModPlugin.Log.LogWarning("Inventory.Changed is gone, a chest may not save right away.");
+                return;
+            }
+
+            ChangedMethod.Invoke(inventory, new object[] { false, false });
         }
 
         /// <summary>
@@ -66,21 +132,50 @@ namespace GorilaChestMod
             while (item.m_stack > 0)
             {
                 int chunk = Mathf.Min(chunkSize, item.m_stack);
+                int moved = MoveChunk(destination, item, chunk);
 
-                ItemDrop.ItemData piece = item.Clone();
-                piece.m_stack = chunk;
+                item.m_stack -= moved;
 
-                // The clone is within the destination limit, so this reaches the
-                // vanilla path rather than coming back through the split prefix.
-                if (!destination.AddItem(piece))
+                if (moved < chunk)
                 {
+                    // The destination ran out of room part way through.
                     return false;
                 }
-
-                item.m_stack -= chunk;
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Copies up to <paramref name="chunk"/> items into the destination and
+        /// reports how many actually landed there. The caller owns the source
+        /// stack and subtracts what moved.
+        ///
+        /// The count matters: Inventory.AddItem merges into existing stacks one
+        /// item at a time and only then looks for an empty slot, so a destination
+        /// that fills up mid chunk keeps part of it and still answers false.
+        /// Trusting that answer alone would either duplicate the part that moved
+        /// or destroy the part that did not.
+        /// </summary>
+        internal static int MoveChunk(Inventory destination, ItemDrop.ItemData item, int chunk)
+        {
+            if (chunk <= 0)
+            {
+                return 0;
+            }
+
+            ItemDrop.ItemData piece = item.Clone();
+            piece.m_stack = chunk;
+
+            // The clone is within the destination limit, so this reaches the
+            // vanilla path rather than coming back through the split prefix.
+            if (destination.AddItem(piece))
+            {
+                return chunk;
+            }
+
+            // Whatever AddItem could not place stays in the clone, which it did not keep.
+            return Mathf.Clamp(chunk - piece.m_stack, 0, chunk);
         }
     }
 }

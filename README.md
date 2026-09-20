@@ -18,8 +18,8 @@ Runs on the client and on a dedicated server.
 
 | Item | Value |
 | --- | --- |
-| Game version | 1.0.7 |
-| Steam build | 25185596 |
+| Game version | 1.0.15 |
+| Steam build | 25390630 |
 | Engine | Unity 6000.0.75f1, Mono backend |
 | Game code | `valheim_Data/Managed/assembly_valheim.dll` |
 
@@ -33,7 +33,7 @@ BepInEx 5 plus Harmony, patching in memory. No game file is modified.
 2. Copy `GorilaChestMod.dll` into `Valheim/BepInEx/plugins/GorilaChestMod/`, or
    extract the `-nexus.zip` release over the game folder.
 3. Start the game. `BepInEx/LogOutput.log` should contain a line reading
-   `GorilaChestMod 2.4.0 loaded`.
+   `GorilaChestMod 2.4.1 loaded`.
 
 With r2modman or Thunderstore Mod Manager, use `Import local mod` and pick the
 `-thunderstore.zip` release. Do not mix a mod manager with a manual BepInEx
@@ -83,7 +83,9 @@ can be edited with the game closed.
 
 When you are connected to a server that has the mod, that server's
 `Enabled` and `ChestStackSize` under Chest stacks replace your local values for
-as long as you are connected. Everything else stays personal.
+as long as you are connected. Those values are held in memory only: your config
+file is never rewritten, so leaving the server gives you your own settings back.
+Everything else stays personal.
 
 ## Which chests count
 
@@ -135,18 +137,30 @@ backpack.
 Lowering the limit later never destroys anything: while a saved chest is being
 rebuilt, the stack coming off disk raises the ceiling for that one item, so a
 chest filled under a larger setting keeps what it holds. It simply stops growing. The list of methods is discovered from the game's own IL at startup
-rather than hard coded, and written to the log.
+rather than hard coded, and written to the log. A method can be hooked and still
+have nothing replaced after a game update, so that case is now an error in the
+log instead of silence; the successful counts are there too under `Verbose`.
 
 That single change covers saving and loading too: the overload of
 `Inventory.AddItem` that rebuilds an inventory from its saved bytes clamps by the
 same field, which is why a vanilla server or a vanilla client would otherwise
 trim the excess away.
 
-Three guards keep oversized stacks from leaking out of chests:
+Four guards keep oversized stacks from leaking out of chests:
 
+- `InventoryGrid.DropItem`, the mouse path, moves an oversized stack itself
+  instead of letting the game do it. Vanilla has a swap branch that takes the
+  dragged stack out of its inventory before handing it over, which counts on the
+  whole stack landing on the other side; with a chest stack larger than a
+  backpack slot may hold, the part that did not fit belonged to nobody and was
+  lost. Now one vanilla sized stack lands on the slot you aimed at, the rest
+  spreads over the free slots of the same inventory, and a swap onto an item of
+  another type is refused with a message rather than losing anything.
 - `Inventory.AddItem(ItemData)` splits a stack that is too large for its
   destination across several slots, so shift clicking 1000 wood out of a chest
-  gives you twenty vanilla stacks.
+  gives you twenty vanilla stacks. Each chunk reports how many items actually
+  landed, because a destination that fills up part way through a chunk keeps
+  what it took and still answers "failed".
 - The slot targeted `Inventory.AddItem` moves only a vanilla sized portion and
   reports the move as partial, so the rest stays in the chest.
 - `ItemDrop.DropItem` splits oversized stacks into several drops, so a destroyed
@@ -189,7 +203,9 @@ while the stack limit patches do their job on every chest the server touches.
 
 Config sync is two routed RPCs of the game's own network layer: a client asks
 once it is connected, the server answers with its chest stack settings, and a
-server never takes those values from a client.
+server never takes those values from a client. On the client those values live
+in memory for the length of the session, so a visit to a server never changes
+what is written in the player's own config file.
 
 ## Build
 

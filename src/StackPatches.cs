@@ -94,13 +94,32 @@ namespace GorilaChestMod
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
         {
             // Inside Inventory, "this" is the inventory the limit applies to.
-            return CallRedirector.ReplaceFieldReads(
+            IEnumerable<CodeInstruction> result = CallRedirector.ReplaceFieldReads(
                 instructions,
                 "Inventory." + original.Name,
                 StackFields.MaxStackSize,
                 StackFields.MaxStackFor,
                 () => new[] { new CodeInstruction(OpCodes.Ldarg_0) },
-                out int _);
+                out int replaced);
+
+            // A method can be hooked and still have nothing replaced if the game
+            // stops reading the field the way it used to. Saying so out loud beats
+            // a silently vanilla sized chest.
+            if (replaced == 0)
+            {
+                GorilaChestModPlugin.Log.LogError(
+                    $"Inventory.{original.Name} was hooked but no stack limit read was replaced. " +
+                    "The game code changed, part of chest stacks is inactive.");
+            }
+            else if (ModConfig.Verbose.Value)
+            {
+                // Harmony re runs a transpiler whenever another patch joins the
+                // same method, so this would repeat itself in a normal log.
+                GorilaChestModPlugin.Log.LogInfo(
+                    $"Chest stacks: replaced {replaced} stack limit read(s) in Inventory.{original.Name}.");
+            }
+
+            return result;
         }
     }
 
@@ -126,6 +145,11 @@ namespace GorilaChestMod
             {
                 GorilaChestModPlugin.Log.LogWarning(
                     "InventoryGrid.UpdateGui no longer reads m_maxStackSize, chest slots will show the vanilla limit.");
+            }
+            else if (ModConfig.Verbose.Value)
+            {
+                GorilaChestModPlugin.Log.LogInfo(
+                    $"Chest stacks: replaced {replaced} stack limit read(s) in InventoryGrid.UpdateGui.");
             }
 
             return result;

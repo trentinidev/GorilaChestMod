@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.4.1
+
+- **Fixed: items could be lost when moving an oversized stack onto an occupied
+  slot.** The game swaps the two stacks there, and a swap takes the dragged
+  stack out of its inventory before handing it over, so the part that did not
+  fit in the destination belonged to nobody and was gone at the next save.
+  Reported on Nexus, thank you.
+- **An oversized stack now comes out in one go.** Dragging 1000 wood into your
+  inventory fills the slot you aimed at and spreads the rest over the free
+  slots, instead of moving one vanilla stack per click.
+- **Fixed: a chest slot past the vanilla limit lights up again** while you drag
+  a matching stack over it. The highlight asked the game for the space left in
+  the stack, which knows nothing about chests and always answered with the
+  vanilla limit.
+- **A server no longer rewrites your config file.** Its chest stack settings
+  still apply while you are connected, but they are held in memory, so leaving
+  the server gives you your own settings back.
+- Shift clicking into an almost full inventory can no longer duplicate or
+  destroy part of a stack: each chunk now reports how many items really landed.
+- A hooked method that no longer has a stack limit read to replace is now an
+  error in the log instead of silence, so a game update that moves them is
+  visible; the counts per method are in the log under `Verbose`.
+- Built and checked against Valheim 1.0.15.
+
 ## 2.4.0
 
 - **The quick stack button is gone.** It kept drawing in front of other panels,

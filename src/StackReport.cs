@@ -60,7 +60,7 @@ namespace GorilaChestMod
             GorilaChestModPlugin.Log.LogInfo($"Vanilla stack limits in this build: {spread}.");
             GorilaChestModPlugin.Log.LogInfo($"Examples: {string.Join(", ", samples.ToArray())}.");
             GorilaChestModPlugin.Log.LogInfo(
-                $"Inside chests those become {ModConfig.ChestStackSize.Value}, except where the vanilla limit is already higher.");
+                $"Inside chests those become {StackSettings.StackSize}, except where the vanilla limit is already higher.");
         }
     }
 

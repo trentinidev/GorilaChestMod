@@ -128,6 +128,22 @@ int equipChecks = CallsTo(stackAll, isEquipped);
 if (equipChecks < 1) Fail("Inventory.StackAll no longer asks IsItemEquiped, favorites would not be honoured by the chest stack button");
 else Console.WriteLine($"ok   Inventory.StackAll: {equipChecks} call(s) to Humanoid.IsItemEquiped");
 
+Console.WriteLine("\n--- patch targets: oversized drag and drop ---");
+var gridDropItem = Method("InventoryGrid", "DropItem", new[] { "Inventory", "ItemData", "Int32", "Vector2i" });
+Method("InventoryGrid", "GetInventory", Array.Empty<string>());
+Method("InventoryGui", "CanDropDragOntoItem", new[] { "ItemData" });
+Method("InventoryGui", "get_ContainerGrid", Array.Empty<string>());
+Field("InventoryGui", "m_dragItem");
+var moveItemToThis = Method("Inventory", "MoveItemToThis", new[] { "Inventory", "ItemData", "Int32", "Int32", "Int32" });
+Method("Inventory", "RemoveItem", new[] { "ItemData" });
+Method("Inventory", "Changed", new[] { "Boolean", "Boolean" });
+Method("ItemData", "IsSameType", new[] { "ItemData" });
+Method("ItemData", "Clone", Array.Empty<string>());
+
+// The oversized move stands in for this call, so it has to still be the one
+// DropItem uses to hand a stack over.
+ExpectCalls("InventoryGrid.DropItem", gridDropItem, moveItemToThis, 1);
+
 Console.WriteLine("\n--- redirected calls still present ---");
 var invCount = Method("Inventory", "CountItems", new[] { "String", "Int32", "Boolean" }, quiet: true);
 var invHave = Method("Inventory", "HaveItem", new[] { "String", "Boolean" }, quiet: true);
