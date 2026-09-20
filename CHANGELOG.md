@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.4.2
+
+- Documentation only, the mod itself is unchanged from 2.4.1. The readme no
+  longer carries the build and packaging sections, which spoke to whoever
+  compiles the mod rather than to whoever plays with it.
+
 ## 2.4.1
 
 - **Fixed: items could be lost when moving an oversized stack onto an occupied
